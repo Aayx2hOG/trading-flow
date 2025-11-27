@@ -16,10 +16,13 @@ import {
     SheetHeader,
     SheetTitle,
 } from "@/components/ui/sheet"
+import type { PriceTriggerMetaData } from "@/nodes/triggers/PriceTrigger";
+import type { TimerNodeMetaData } from "@/nodes/triggers/TimerTrigger";
 import { useState } from "react";
+import { Input } from "./ui/input";
 
 const SUPPORTED_TRIGGERS = [{
-    id: 'timer',
+    id: 'timer-trigger',
     title: 'Timer',
     description: 'Run this trigger every x seconds/minutes',
 }, {
@@ -27,13 +30,16 @@ const SUPPORTED_TRIGGERS = [{
     title: 'Price Trigger',
     description: 'Runs whenever the price goes above or below a certain number for an asset'
 }]
+const SUPPORTED_ASSETS = ['SOL', 'BTC', 'ETH'];
 
 export const TriggerSheet = ({
     onSelect
 }: {
     onSelect: (kind: NodeKind, metaData: NodeMetaData) => void
 }) => {
-    const [metaData, setMetaData] = useState({});
+    const [metaData, setMetaData] = useState<PriceTriggerMetaData | TimerNodeMetaData>({
+        time: 3600
+    });
     const [selectedTrigger, setSelectedTrigger] = useState(SUPPORTED_TRIGGERS[0].id);
     return <Sheet open={true}>
         <SheetContent>
@@ -43,7 +49,7 @@ export const TriggerSheet = ({
                     Select the type of trigger you need
                     <Select value={selectedTrigger} onValueChange={(value) => setSelectedTrigger(value)}>
                         <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Select a flow" />
+                            <SelectValue placeholder="Select a trigger" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
@@ -56,6 +62,41 @@ export const TriggerSheet = ({
                             </SelectGroup>
                         </SelectContent>
                     </Select>
+                    {selectedTrigger === 'timer-trigger' &&
+                        <div>
+                            Number of seconds after which to run the timer
+                            <Input value={metaData.time} onChange={(e) => setMetaData(metaData => ({
+                                ...metaData,
+                                time: Number(e.target.value)
+                            }))}></Input>
+                        </div>
+                    }
+                    {selectedTrigger === 'price-trigger' &&
+                        <div>
+                            Price:
+                            <Input type="text" onChange={(e) => setMetaData(m => ({
+                                ...m,
+                                price: Number(e.target.value)
+                            }))} />
+                            <Select value={metaData.asset} onValueChange={(value) => setMetaData(metaData => ({
+                                ...metaData,
+                                asset: value
+                            }))}>
+                                <SelectTrigger className="w-[180px]">
+                                    <SelectValue placeholder="Select an asset" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        {SUPPORTED_ASSETS.map((id) =>
+                                            <>
+                                                <SelectItem key={id} value={id}>{id}</SelectItem >
+                                            </>
+                                        )}
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    }
                 </SheetDescription>
             </SheetHeader>
             <SheetFooter>
