@@ -1,12 +1,13 @@
 import { useState, useCallback } from 'react';
 import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge } from '@xyflow/react';
 import { TriggerSheet } from './TriggerSheet';
-import { PriceTrigger, type PriceTriggerMetaData } from '@/nodes/triggers/PriceTrigger';
-import { TimerTrigger, type TimerNodeMetaData } from '@/nodes/triggers/TimerTrigger';
-import { Lighter, type TradingMetadata } from '@/nodes/actions/Lighter';
+import { PriceTrigger } from '@/nodes/triggers/PriceTrigger';
+import { TimerTrigger } from '@/nodes/triggers/TimerTrigger';
+import { Lighter } from '@/nodes/actions/Lighter';
 import { ActionSheet } from './ActionSheet';
 import { Backpack } from '@/nodes/actions/Backpack';
 import { Hyperliquid } from '@/nodes/actions/Hyperliquid';
+import type { PriceTriggerMetaData, TimerNodeMetaData, TradingMetadata } from 'common/types';
 
 const nodeTypes = {
     'price-trigger': PriceTrigger,

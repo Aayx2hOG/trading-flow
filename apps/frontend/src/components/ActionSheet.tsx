@@ -1,5 +1,6 @@
 import type { NodeKind, NodeMetaData } from "./CreateWorkflow";
 import { Button } from "@/components/ui/button"
+import type { TradingMetadata } from "common/types"
 import {
     Select,
     SelectContent,
@@ -18,7 +19,7 @@ import {
 } from "@/components/ui/sheet"
 import { useState } from "react";
 import { Input } from "./ui/input";
-import type { TradingMetadata } from "@/nodes/actions/Lighter";
+import { SUPPORTED_ASSETS } from "./TriggerSheet";
 
 const SUPPORTED_ACTIONS = [{
     id: 'hyperliquid',
@@ -33,7 +34,6 @@ const SUPPORTED_ACTIONS = [{
     title: 'Backpack',
     description: 'Place a trade on Backpack'
 }]
-const SUPPORTED_ASSETS = ['SOL', 'BTC', 'ETH'];
 
 export const ActionSheet = ({
     onSelect,

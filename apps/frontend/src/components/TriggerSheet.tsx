@@ -16,10 +16,9 @@ import {
     SheetHeader,
     SheetTitle,
 } from "@/components/ui/sheet"
-import type { PriceTriggerMetaData } from "@/nodes/triggers/PriceTrigger";
-import type { TimerNodeMetaData } from "@/nodes/triggers/TimerTrigger";
 import { useState } from "react";
 import { Input } from "./ui/input";
+import type { PriceTriggerMetaData, TimerNodeMetaData } from "common/types";
 
 const SUPPORTED_TRIGGERS = [{
     id: 'timer-trigger',
