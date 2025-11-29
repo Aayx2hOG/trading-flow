@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String     @id @default(cuid())
+  username  String
+  password  String
+  workflows Workflow[]
+}
+
+model Edge {
+  id         String    @id
+  source     String
+  target     String
+  workflow   Workflow? @relation(fields: [workflowId], references: [id])
+  workflowId String?
+
+  @@index([workflowId])
+}
+
+enum DataKind {
+  ACTION
+  TRIGGER
+}
+
+model NodeType {
+  id    String @id @default(cuid())
+  name  String @unique
+  nodes Node[]
+}
+
+model Node {
+  id               String            @id
+  positionX        Float
+  positionY        Float
+  credentials      Json?
+  typeId           String
+  type             NodeType          @relation(fields: [typeId], references: [id])
+  dataKind         DataKind
+  metaData         Json?
+  workflow         Workflow?         @relation(fields: [workflowId], references: [id])
+  workflowId       String?
+  credentialsTypes CredentialsType[]
+
+  @@index([workflowId])
+}
+
+model Workflow {
+  id         String      @id @default(cuid())
+  userId     String
+  user       User        @relation(fields: [userId], references: [id])
+  nodes      Node[]
+  edges      Edge[]
+  executions Execution[]
+
+  @@index([userId])
+}
+
+enum ExecutionStatus {
+  PENDING
+  SUCCESS
+  FAILURE
+}
+
+model Execution {
+  id         String          @id @default(cuid())
+  workflowId String
+  workflow   Workflow        @relation(fields: [workflowId], references: [id])
+  status     ExecutionStatus @default(PENDING)
+  startTime  DateTime        @default(now())
+  endTime    DateTime?
+
+  @@index([workflowId])
+  @@index([status])
+}
+
+model CredentialsType {
+  id       String  @id @default(cuid())
+  title    String
+  required Boolean
+  nodeId   String
+  node     Node    @relation(fields: [nodeId], references: [id])
+
+  @@index([nodeId])
+}
