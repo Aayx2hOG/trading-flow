@@ -4,7 +4,8 @@ import cors from 'cors';
 import { prismaClient } from 'db/client';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { SignUpSchema } from 'common/types';
+import { CreateWorkflowSchema, SignInSchema, SignUpSchema } from 'common/types';
+import { authMiddleware } from './middleware';
 
 const app = express();
 const JWT_SECRET = process.env.JWT_SECRET || '';
@@ -31,8 +32,8 @@ app.post('/signup', async (req: Request, res: Response) => {
             },
         });
 
-        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || 'default_secret', { expiresIn: '7d' });
-        res.status(201).json({ token });
+        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || 'default_secret');
+        res.status(201).json({ userId: user.id, token });
 
     } catch (error) {
         console.error('Signup error:', error);
@@ -41,45 +42,72 @@ app.post('/signup', async (req: Request, res: Response) => {
 });
 
 app.post('/signin', async (req: Request, res: Response) => {
-    const { email, password } = req.body;
+    const { success, data } = SignInSchema.safeParse(req.body);
 
-    if (!email || !password) {
+    if (!success) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    const user = await prismaClient.user.findUnique({ where: { email } });
-
+    const user = await prismaClient.user.findUnique({ where: { email: data.email } });
     if (!user) {
         return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const isValidPassword = await bcrypt.compare(password, user.password);
+    const isValidPassword = await bcrypt.compare(data.password, user.password);
     if (!isValidPassword) {
         return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ userId: user.id }, JWT_SECRET || 'default_secret');
 
-    res.status(200).json({ token });
+    res.status(200).json({ userId: user.id, token });
 });
 
-app.post('/workflow', async (req: Request, res: Response) => {
+app.post('/workflow', authMiddleware, async (req: Request, res: Response) => {
+    const userId = req.userId;
+
+    if (!userId) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const { success, data } = CreateWorkflowSchema.safeParse(req.body);
+
+    if (!success) {
+        return res.status(400).json({ error: 'Invalid workflow data' });
+    }
+    try {
+        const workflow = await prismaClient.workflow.create({
+            data: {
+                user: {
+                    connect: { id: userId }
+                },
+                nodes: {
+                    create: data.nodes
+                },
+                edges: {
+                    create: data.edges
+                }
+            }
+        });
+        res.status(201).json({ workflowId: workflow.id });
+    } catch (error) {
+        console.error('Workflow creation error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.put('/workflow', authMiddleware, async (req: Request, res: Response) => {
 
 });
 
-app.put('/workflow', async (req: Request, res: Response) => {
+app.put('/workflow/:workflowId', authMiddleware, async (req: Request, res: Response) => {
 
 });
 
-app.put('/workflow/:id', async (req: Request, res: Response) => {
-
+app.get('/workflow/executions/:workflowId', authMiddleware, async (req: Request, res: Response) => {
 });
 
-app.get('/workflow/executions/:workflowId', async (req: Request, res: Response) => {
-
-});
-
-app.post('/workflow/credentials', async (req: Request, res: Response) => {
+app.get('/nodes', async (req: Request, res: Response) => {
 
 });
 

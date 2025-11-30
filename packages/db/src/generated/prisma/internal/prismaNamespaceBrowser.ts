@@ -53,11 +53,9 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   User: 'User',
   Edge: 'Edge',
-  NodeType: 'NodeType',
   Node: 'Node',
   Workflow: 'Workflow',
-  Execution: 'Execution',
-  CredentialsType: 'CredentialsType'
+  Execution: 'Execution'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -96,22 +94,11 @@ export const EdgeScalarFieldEnum = {
 export type EdgeScalarFieldEnum = (typeof EdgeScalarFieldEnum)[keyof typeof EdgeScalarFieldEnum]
 
 
-export const NodeTypeScalarFieldEnum = {
-  id: 'id',
-  name: 'name'
-} as const
-
-export type NodeTypeScalarFieldEnum = (typeof NodeTypeScalarFieldEnum)[keyof typeof NodeTypeScalarFieldEnum]
-
-
 export const NodeScalarFieldEnum = {
   id: 'id',
-  positionX: 'positionX',
-  positionY: 'positionY',
-  credentials: 'credentials',
-  typeId: 'typeId',
-  dataKind: 'dataKind',
-  metaData: 'metaData',
+  type: 'type',
+  position: 'position',
+  data: 'data',
   workflowId: 'workflowId'
 } as const
 
@@ -137,16 +124,6 @@ export const ExecutionScalarFieldEnum = {
 export type ExecutionScalarFieldEnum = (typeof ExecutionScalarFieldEnum)[keyof typeof ExecutionScalarFieldEnum]
 
 
-export const CredentialsTypeScalarFieldEnum = {
-  id: 'id',
-  title: 'title',
-  required: 'required',
-  nodeId: 'nodeId'
-} as const
-
-export type CredentialsTypeScalarFieldEnum = (typeof CredentialsTypeScalarFieldEnum)[keyof typeof CredentialsTypeScalarFieldEnum]
-
-
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -155,12 +132,11 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
-export const NullableJsonNullValueInput = {
-  DbNull: 'DbNull',
+export const JsonNullValueInput = {
   JsonNull: 'JsonNull'
 } as const
 
-export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {

@@ -230,7 +230,7 @@ export type ExecutionScalarWhereWithAggregatesInput = {
 
 export type ExecutionCreateInput = {
   id?: string
-  status?: $Enums.ExecutionStatus
+  status: $Enums.ExecutionStatus
   startTime?: Date | string
   endTime?: Date | string | null
   workflow: Prisma.WorkflowCreateNestedOneWithoutExecutionsInput
@@ -239,7 +239,7 @@ export type ExecutionCreateInput = {
 export type ExecutionUncheckedCreateInput = {
   id?: string
   workflowId: string
-  status?: $Enums.ExecutionStatus
+  status: $Enums.ExecutionStatus
   startTime?: Date | string
   endTime?: Date | string | null
 }
@@ -263,7 +263,7 @@ export type ExecutionUncheckedUpdateInput = {
 export type ExecutionCreateManyInput = {
   id?: string
   workflowId: string
-  status?: $Enums.ExecutionStatus
+  status: $Enums.ExecutionStatus
   startTime?: Date | string
   endTime?: Date | string | null
 }
@@ -373,14 +373,14 @@ export type NullableDateTimeFieldUpdateOperationsInput = {
 
 export type ExecutionCreateWithoutWorkflowInput = {
   id?: string
-  status?: $Enums.ExecutionStatus
+  status: $Enums.ExecutionStatus
   startTime?: Date | string
   endTime?: Date | string | null
 }
 
 export type ExecutionUncheckedCreateWithoutWorkflowInput = {
   id?: string
-  status?: $Enums.ExecutionStatus
+  status: $Enums.ExecutionStatus
   startTime?: Date | string
   endTime?: Date | string | null
 }
@@ -424,7 +424,7 @@ export type ExecutionScalarWhereInput = {
 
 export type ExecutionCreateManyWorkflowInput = {
   id?: string
-  status?: $Enums.ExecutionStatus
+  status: $Enums.ExecutionStatus
   startTime?: Date | string
   endTime?: Date | string | null
 }

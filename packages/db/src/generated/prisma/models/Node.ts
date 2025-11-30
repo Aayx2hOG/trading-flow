@@ -20,89 +20,49 @@ export type NodeModel = runtime.Types.Result.DefaultSelection<Prisma.$NodePayloa
 
 export type AggregateNode = {
   _count: NodeCountAggregateOutputType | null
-  _avg: NodeAvgAggregateOutputType | null
-  _sum: NodeSumAggregateOutputType | null
   _min: NodeMinAggregateOutputType | null
   _max: NodeMaxAggregateOutputType | null
 }
 
-export type NodeAvgAggregateOutputType = {
-  positionX: number | null
-  positionY: number | null
-}
-
-export type NodeSumAggregateOutputType = {
-  positionX: number | null
-  positionY: number | null
-}
-
 export type NodeMinAggregateOutputType = {
   id: string | null
-  positionX: number | null
-  positionY: number | null
-  typeId: string | null
-  dataKind: $Enums.DataKind | null
+  type: string | null
   workflowId: string | null
 }
 
 export type NodeMaxAggregateOutputType = {
   id: string | null
-  positionX: number | null
-  positionY: number | null
-  typeId: string | null
-  dataKind: $Enums.DataKind | null
+  type: string | null
   workflowId: string | null
 }
 
 export type NodeCountAggregateOutputType = {
   id: number
-  positionX: number
-  positionY: number
-  credentials: number
-  typeId: number
-  dataKind: number
-  metaData: number
+  type: number
+  position: number
+  data: number
   workflowId: number
   _all: number
 }
 
 
-export type NodeAvgAggregateInputType = {
-  positionX?: true
-  positionY?: true
-}
-
-export type NodeSumAggregateInputType = {
-  positionX?: true
-  positionY?: true
-}
-
 export type NodeMinAggregateInputType = {
   id?: true
-  positionX?: true
-  positionY?: true
-  typeId?: true
-  dataKind?: true
+  type?: true
   workflowId?: true
 }
 
 export type NodeMaxAggregateInputType = {
   id?: true
-  positionX?: true
-  positionY?: true
-  typeId?: true
-  dataKind?: true
+  type?: true
   workflowId?: true
 }
 
 export type NodeCountAggregateInputType = {
   id?: true
-  positionX?: true
-  positionY?: true
-  credentials?: true
-  typeId?: true
-  dataKind?: true
-  metaData?: true
+  type?: true
+  position?: true
+  data?: true
   workflowId?: true
   _all?: true
 }
@@ -145,18 +105,6 @@ export type NodeAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
-   * Select which fields to average
-  **/
-  _avg?: NodeAvgAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
-   * Select which fields to sum
-  **/
-  _sum?: NodeSumAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
    * Select which fields to find the minimum value
   **/
   _min?: NodeMinAggregateInputType
@@ -187,24 +135,17 @@ export type NodeGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   _count?: NodeCountAggregateInputType | true
-  _avg?: NodeAvgAggregateInputType
-  _sum?: NodeSumAggregateInputType
   _min?: NodeMinAggregateInputType
   _max?: NodeMaxAggregateInputType
 }
 
 export type NodeGroupByOutputType = {
   id: string
-  positionX: number
-  positionY: number
-  credentials: runtime.JsonValue | null
-  typeId: string
-  dataKind: $Enums.DataKind
-  metaData: runtime.JsonValue | null
+  type: string
+  position: runtime.JsonValue
+  data: runtime.JsonValue
   workflowId: string | null
   _count: NodeCountAggregateOutputType | null
-  _avg: NodeAvgAggregateOutputType | null
-  _sum: NodeSumAggregateOutputType | null
   _min: NodeMinAggregateOutputType | null
   _max: NodeMaxAggregateOutputType | null
 }
@@ -229,30 +170,20 @@ export type NodeWhereInput = {
   OR?: Prisma.NodeWhereInput[]
   NOT?: Prisma.NodeWhereInput | Prisma.NodeWhereInput[]
   id?: Prisma.StringFilter<"Node"> | string
-  positionX?: Prisma.FloatFilter<"Node"> | number
-  positionY?: Prisma.FloatFilter<"Node"> | number
-  credentials?: Prisma.JsonNullableFilter<"Node">
-  typeId?: Prisma.StringFilter<"Node"> | string
-  dataKind?: Prisma.EnumDataKindFilter<"Node"> | $Enums.DataKind
-  metaData?: Prisma.JsonNullableFilter<"Node">
+  type?: Prisma.StringFilter<"Node"> | string
+  position?: Prisma.JsonFilter<"Node">
+  data?: Prisma.JsonFilter<"Node">
   workflowId?: Prisma.StringNullableFilter<"Node"> | string | null
-  type?: Prisma.XOR<Prisma.NodeTypeScalarRelationFilter, Prisma.NodeTypeWhereInput>
   workflow?: Prisma.XOR<Prisma.WorkflowNullableScalarRelationFilter, Prisma.WorkflowWhereInput> | null
-  credentialsTypes?: Prisma.CredentialsTypeListRelationFilter
 }
 
 export type NodeOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  positionX?: Prisma.SortOrder
-  positionY?: Prisma.SortOrder
-  credentials?: Prisma.SortOrderInput | Prisma.SortOrder
-  typeId?: Prisma.SortOrder
-  dataKind?: Prisma.SortOrder
-  metaData?: Prisma.SortOrderInput | Prisma.SortOrder
+  type?: Prisma.SortOrder
+  position?: Prisma.SortOrder
+  data?: Prisma.SortOrder
   workflowId?: Prisma.SortOrderInput | Prisma.SortOrder
-  type?: Prisma.NodeTypeOrderByWithRelationInput
   workflow?: Prisma.WorkflowOrderByWithRelationInput
-  credentialsTypes?: Prisma.CredentialsTypeOrderByRelationAggregateInput
 }
 
 export type NodeWhereUniqueInput = Prisma.AtLeast<{
@@ -260,32 +191,22 @@ export type NodeWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.NodeWhereInput | Prisma.NodeWhereInput[]
   OR?: Prisma.NodeWhereInput[]
   NOT?: Prisma.NodeWhereInput | Prisma.NodeWhereInput[]
-  positionX?: Prisma.FloatFilter<"Node"> | number
-  positionY?: Prisma.FloatFilter<"Node"> | number
-  credentials?: Prisma.JsonNullableFilter<"Node">
-  typeId?: Prisma.StringFilter<"Node"> | string
-  dataKind?: Prisma.EnumDataKindFilter<"Node"> | $Enums.DataKind
-  metaData?: Prisma.JsonNullableFilter<"Node">
+  type?: Prisma.StringFilter<"Node"> | string
+  position?: Prisma.JsonFilter<"Node">
+  data?: Prisma.JsonFilter<"Node">
   workflowId?: Prisma.StringNullableFilter<"Node"> | string | null
-  type?: Prisma.XOR<Prisma.NodeTypeScalarRelationFilter, Prisma.NodeTypeWhereInput>
   workflow?: Prisma.XOR<Prisma.WorkflowNullableScalarRelationFilter, Prisma.WorkflowWhereInput> | null
-  credentialsTypes?: Prisma.CredentialsTypeListRelationFilter
 }, "id">
 
 export type NodeOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  positionX?: Prisma.SortOrder
-  positionY?: Prisma.SortOrder
-  credentials?: Prisma.SortOrderInput | Prisma.SortOrder
-  typeId?: Prisma.SortOrder
-  dataKind?: Prisma.SortOrder
-  metaData?: Prisma.SortOrderInput | Prisma.SortOrder
+  type?: Prisma.SortOrder
+  position?: Prisma.SortOrder
+  data?: Prisma.SortOrder
   workflowId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.NodeCountOrderByAggregateInput
-  _avg?: Prisma.NodeAvgOrderByAggregateInput
   _max?: Prisma.NodeMaxOrderByAggregateInput
   _min?: Prisma.NodeMinOrderByAggregateInput
-  _sum?: Prisma.NodeSumOrderByAggregateInput
 }
 
 export type NodeScalarWhereWithAggregatesInput = {
@@ -293,92 +214,85 @@ export type NodeScalarWhereWithAggregatesInput = {
   OR?: Prisma.NodeScalarWhereWithAggregatesInput[]
   NOT?: Prisma.NodeScalarWhereWithAggregatesInput | Prisma.NodeScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Node"> | string
-  positionX?: Prisma.FloatWithAggregatesFilter<"Node"> | number
-  positionY?: Prisma.FloatWithAggregatesFilter<"Node"> | number
-  credentials?: Prisma.JsonNullableWithAggregatesFilter<"Node">
-  typeId?: Prisma.StringWithAggregatesFilter<"Node"> | string
-  dataKind?: Prisma.EnumDataKindWithAggregatesFilter<"Node"> | $Enums.DataKind
-  metaData?: Prisma.JsonNullableWithAggregatesFilter<"Node">
+  type?: Prisma.StringWithAggregatesFilter<"Node"> | string
+  position?: Prisma.JsonWithAggregatesFilter<"Node">
+  data?: Prisma.JsonWithAggregatesFilter<"Node">
   workflowId?: Prisma.StringNullableWithAggregatesFilter<"Node"> | string | null
 }
 
 export type NodeCreateInput = {
   id: string
-  positionX: number
-  positionY: number
-  credentials?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  dataKind: $Enums.DataKind
-  metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  type: Prisma.NodeTypeCreateNestedOneWithoutNodesInput
+  type: string
+  position: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  data: Prisma.JsonNullValueInput | runtime.InputJsonValue
   workflow?: Prisma.WorkflowCreateNestedOneWithoutNodesInput
-  credentialsTypes?: Prisma.CredentialsTypeCreateNestedManyWithoutNodeInput
 }
 
 export type NodeUncheckedCreateInput = {
   id: string
-  positionX: number
-  positionY: number
-  credentials?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  typeId: string
-  dataKind: $Enums.DataKind
-  metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  type: string
+  position: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  data: Prisma.JsonNullValueInput | runtime.InputJsonValue
   workflowId?: string | null
-  credentialsTypes?: Prisma.CredentialsTypeUncheckedCreateNestedManyWithoutNodeInput
 }
 
 export type NodeUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  positionX?: Prisma.FloatFieldUpdateOperationsInput | number
-  positionY?: Prisma.FloatFieldUpdateOperationsInput | number
-  credentials?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  dataKind?: Prisma.EnumDataKindFieldUpdateOperationsInput | $Enums.DataKind
-  metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  type?: Prisma.NodeTypeUpdateOneRequiredWithoutNodesNestedInput
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  position?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  data?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   workflow?: Prisma.WorkflowUpdateOneWithoutNodesNestedInput
-  credentialsTypes?: Prisma.CredentialsTypeUpdateManyWithoutNodeNestedInput
 }
 
 export type NodeUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  positionX?: Prisma.FloatFieldUpdateOperationsInput | number
-  positionY?: Prisma.FloatFieldUpdateOperationsInput | number
-  credentials?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  typeId?: Prisma.StringFieldUpdateOperationsInput | string
-  dataKind?: Prisma.EnumDataKindFieldUpdateOperationsInput | $Enums.DataKind
-  metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  position?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  data?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   workflowId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  credentialsTypes?: Prisma.CredentialsTypeUncheckedUpdateManyWithoutNodeNestedInput
 }
 
 export type NodeCreateManyInput = {
   id: string
-  positionX: number
-  positionY: number
-  credentials?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  typeId: string
-  dataKind: $Enums.DataKind
-  metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  type: string
+  position: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  data: Prisma.JsonNullValueInput | runtime.InputJsonValue
   workflowId?: string | null
 }
 
 export type NodeUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  positionX?: Prisma.FloatFieldUpdateOperationsInput | number
-  positionY?: Prisma.FloatFieldUpdateOperationsInput | number
-  credentials?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  dataKind?: Prisma.EnumDataKindFieldUpdateOperationsInput | $Enums.DataKind
-  metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  position?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  data?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type NodeUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  positionX?: Prisma.FloatFieldUpdateOperationsInput | number
-  positionY?: Prisma.FloatFieldUpdateOperationsInput | number
-  credentials?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  typeId?: Prisma.StringFieldUpdateOperationsInput | string
-  dataKind?: Prisma.EnumDataKindFieldUpdateOperationsInput | $Enums.DataKind
-  metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  position?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  data?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   workflowId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type NodeCountOrderByAggregateInput = {
+  id?: Prisma.SortOrder
+  type?: Prisma.SortOrder
+  position?: Prisma.SortOrder
+  data?: Prisma.SortOrder
+  workflowId?: Prisma.SortOrder
+}
+
+export type NodeMaxOrderByAggregateInput = {
+  id?: Prisma.SortOrder
+  type?: Prisma.SortOrder
+  workflowId?: Prisma.SortOrder
+}
+
+export type NodeMinOrderByAggregateInput = {
+  id?: Prisma.SortOrder
+  type?: Prisma.SortOrder
+  workflowId?: Prisma.SortOrder
 }
 
 export type NodeListRelationFilter = {
@@ -389,104 +303,6 @@ export type NodeListRelationFilter = {
 
 export type NodeOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
-}
-
-export type NodeCountOrderByAggregateInput = {
-  id?: Prisma.SortOrder
-  positionX?: Prisma.SortOrder
-  positionY?: Prisma.SortOrder
-  credentials?: Prisma.SortOrder
-  typeId?: Prisma.SortOrder
-  dataKind?: Prisma.SortOrder
-  metaData?: Prisma.SortOrder
-  workflowId?: Prisma.SortOrder
-}
-
-export type NodeAvgOrderByAggregateInput = {
-  positionX?: Prisma.SortOrder
-  positionY?: Prisma.SortOrder
-}
-
-export type NodeMaxOrderByAggregateInput = {
-  id?: Prisma.SortOrder
-  positionX?: Prisma.SortOrder
-  positionY?: Prisma.SortOrder
-  typeId?: Prisma.SortOrder
-  dataKind?: Prisma.SortOrder
-  workflowId?: Prisma.SortOrder
-}
-
-export type NodeMinOrderByAggregateInput = {
-  id?: Prisma.SortOrder
-  positionX?: Prisma.SortOrder
-  positionY?: Prisma.SortOrder
-  typeId?: Prisma.SortOrder
-  dataKind?: Prisma.SortOrder
-  workflowId?: Prisma.SortOrder
-}
-
-export type NodeSumOrderByAggregateInput = {
-  positionX?: Prisma.SortOrder
-  positionY?: Prisma.SortOrder
-}
-
-export type NodeScalarRelationFilter = {
-  is?: Prisma.NodeWhereInput
-  isNot?: Prisma.NodeWhereInput
-}
-
-export type NodeCreateNestedManyWithoutTypeInput = {
-  create?: Prisma.XOR<Prisma.NodeCreateWithoutTypeInput, Prisma.NodeUncheckedCreateWithoutTypeInput> | Prisma.NodeCreateWithoutTypeInput[] | Prisma.NodeUncheckedCreateWithoutTypeInput[]
-  connectOrCreate?: Prisma.NodeCreateOrConnectWithoutTypeInput | Prisma.NodeCreateOrConnectWithoutTypeInput[]
-  createMany?: Prisma.NodeCreateManyTypeInputEnvelope
-  connect?: Prisma.NodeWhereUniqueInput | Prisma.NodeWhereUniqueInput[]
-}
-
-export type NodeUncheckedCreateNestedManyWithoutTypeInput = {
-  create?: Prisma.XOR<Prisma.NodeCreateWithoutTypeInput, Prisma.NodeUncheckedCreateWithoutTypeInput> | Prisma.NodeCreateWithoutTypeInput[] | Prisma.NodeUncheckedCreateWithoutTypeInput[]
-  connectOrCreate?: Prisma.NodeCreateOrConnectWithoutTypeInput | Prisma.NodeCreateOrConnectWithoutTypeInput[]
-  createMany?: Prisma.NodeCreateManyTypeInputEnvelope
-  connect?: Prisma.NodeWhereUniqueInput | Prisma.NodeWhereUniqueInput[]
-}
-
-export type NodeUpdateManyWithoutTypeNestedInput = {
-  create?: Prisma.XOR<Prisma.NodeCreateWithoutTypeInput, Prisma.NodeUncheckedCreateWithoutTypeInput> | Prisma.NodeCreateWithoutTypeInput[] | Prisma.NodeUncheckedCreateWithoutTypeInput[]
-  connectOrCreate?: Prisma.NodeCreateOrConnectWithoutTypeInput | Prisma.NodeCreateOrConnectWithoutTypeInput[]
-  upsert?: Prisma.NodeUpsertWithWhereUniqueWithoutTypeInput | Prisma.NodeUpsertWithWhereUniqueWithoutTypeInput[]
-  createMany?: Prisma.NodeCreateManyTypeInputEnvelope
-  set?: Prisma.NodeWhereUniqueInput | Prisma.NodeWhereUniqueInput[]
-  disconnect?: Prisma.NodeWhereUniqueInput | Prisma.NodeWhereUniqueInput[]
-  delete?: Prisma.NodeWhereUniqueInput | Prisma.NodeWhereUniqueInput[]
-  connect?: Prisma.NodeWhereUniqueInput | Prisma.NodeWhereUniqueInput[]
-  update?: Prisma.NodeUpdateWithWhereUniqueWithoutTypeInput | Prisma.NodeUpdateWithWhereUniqueWithoutTypeInput[]
-  updateMany?: Prisma.NodeUpdateManyWithWhereWithoutTypeInput | Prisma.NodeUpdateManyWithWhereWithoutTypeInput[]
-  deleteMany?: Prisma.NodeScalarWhereInput | Prisma.NodeScalarWhereInput[]
-}
-
-export type NodeUncheckedUpdateManyWithoutTypeNestedInput = {
-  create?: Prisma.XOR<Prisma.NodeCreateWithoutTypeInput, Prisma.NodeUncheckedCreateWithoutTypeInput> | Prisma.NodeCreateWithoutTypeInput[] | Prisma.NodeUncheckedCreateWithoutTypeInput[]
-  connectOrCreate?: Prisma.NodeCreateOrConnectWithoutTypeInput | Prisma.NodeCreateOrConnectWithoutTypeInput[]
-  upsert?: Prisma.NodeUpsertWithWhereUniqueWithoutTypeInput | Prisma.NodeUpsertWithWhereUniqueWithoutTypeInput[]
-  createMany?: Prisma.NodeCreateManyTypeInputEnvelope
-  set?: Prisma.NodeWhereUniqueInput | Prisma.NodeWhereUniqueInput[]
-  disconnect?: Prisma.NodeWhereUniqueInput | Prisma.NodeWhereUniqueInput[]
-  delete?: Prisma.NodeWhereUniqueInput | Prisma.NodeWhereUniqueInput[]
-  connect?: Prisma.NodeWhereUniqueInput | Prisma.NodeWhereUniqueInput[]
-  update?: Prisma.NodeUpdateWithWhereUniqueWithoutTypeInput | Prisma.NodeUpdateWithWhereUniqueWithoutTypeInput[]
-  updateMany?: Prisma.NodeUpdateManyWithWhereWithoutTypeInput | Prisma.NodeUpdateManyWithWhereWithoutTypeInput[]
-  deleteMany?: Prisma.NodeScalarWhereInput | Prisma.NodeScalarWhereInput[]
-}
-
-export type FloatFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
-export type EnumDataKindFieldUpdateOperationsInput = {
-  set?: $Enums.DataKind
 }
 
 export type NodeCreateNestedManyWithoutWorkflowInput = {
@@ -531,102 +347,18 @@ export type NodeUncheckedUpdateManyWithoutWorkflowNestedInput = {
   deleteMany?: Prisma.NodeScalarWhereInput | Prisma.NodeScalarWhereInput[]
 }
 
-export type NodeCreateNestedOneWithoutCredentialsTypesInput = {
-  create?: Prisma.XOR<Prisma.NodeCreateWithoutCredentialsTypesInput, Prisma.NodeUncheckedCreateWithoutCredentialsTypesInput>
-  connectOrCreate?: Prisma.NodeCreateOrConnectWithoutCredentialsTypesInput
-  connect?: Prisma.NodeWhereUniqueInput
-}
-
-export type NodeUpdateOneRequiredWithoutCredentialsTypesNestedInput = {
-  create?: Prisma.XOR<Prisma.NodeCreateWithoutCredentialsTypesInput, Prisma.NodeUncheckedCreateWithoutCredentialsTypesInput>
-  connectOrCreate?: Prisma.NodeCreateOrConnectWithoutCredentialsTypesInput
-  upsert?: Prisma.NodeUpsertWithoutCredentialsTypesInput
-  connect?: Prisma.NodeWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.NodeUpdateToOneWithWhereWithoutCredentialsTypesInput, Prisma.NodeUpdateWithoutCredentialsTypesInput>, Prisma.NodeUncheckedUpdateWithoutCredentialsTypesInput>
-}
-
-export type NodeCreateWithoutTypeInput = {
-  id: string
-  positionX: number
-  positionY: number
-  credentials?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  dataKind: $Enums.DataKind
-  metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  workflow?: Prisma.WorkflowCreateNestedOneWithoutNodesInput
-  credentialsTypes?: Prisma.CredentialsTypeCreateNestedManyWithoutNodeInput
-}
-
-export type NodeUncheckedCreateWithoutTypeInput = {
-  id: string
-  positionX: number
-  positionY: number
-  credentials?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  dataKind: $Enums.DataKind
-  metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  workflowId?: string | null
-  credentialsTypes?: Prisma.CredentialsTypeUncheckedCreateNestedManyWithoutNodeInput
-}
-
-export type NodeCreateOrConnectWithoutTypeInput = {
-  where: Prisma.NodeWhereUniqueInput
-  create: Prisma.XOR<Prisma.NodeCreateWithoutTypeInput, Prisma.NodeUncheckedCreateWithoutTypeInput>
-}
-
-export type NodeCreateManyTypeInputEnvelope = {
-  data: Prisma.NodeCreateManyTypeInput | Prisma.NodeCreateManyTypeInput[]
-  skipDuplicates?: boolean
-}
-
-export type NodeUpsertWithWhereUniqueWithoutTypeInput = {
-  where: Prisma.NodeWhereUniqueInput
-  update: Prisma.XOR<Prisma.NodeUpdateWithoutTypeInput, Prisma.NodeUncheckedUpdateWithoutTypeInput>
-  create: Prisma.XOR<Prisma.NodeCreateWithoutTypeInput, Prisma.NodeUncheckedCreateWithoutTypeInput>
-}
-
-export type NodeUpdateWithWhereUniqueWithoutTypeInput = {
-  where: Prisma.NodeWhereUniqueInput
-  data: Prisma.XOR<Prisma.NodeUpdateWithoutTypeInput, Prisma.NodeUncheckedUpdateWithoutTypeInput>
-}
-
-export type NodeUpdateManyWithWhereWithoutTypeInput = {
-  where: Prisma.NodeScalarWhereInput
-  data: Prisma.XOR<Prisma.NodeUpdateManyMutationInput, Prisma.NodeUncheckedUpdateManyWithoutTypeInput>
-}
-
-export type NodeScalarWhereInput = {
-  AND?: Prisma.NodeScalarWhereInput | Prisma.NodeScalarWhereInput[]
-  OR?: Prisma.NodeScalarWhereInput[]
-  NOT?: Prisma.NodeScalarWhereInput | Prisma.NodeScalarWhereInput[]
-  id?: Prisma.StringFilter<"Node"> | string
-  positionX?: Prisma.FloatFilter<"Node"> | number
-  positionY?: Prisma.FloatFilter<"Node"> | number
-  credentials?: Prisma.JsonNullableFilter<"Node">
-  typeId?: Prisma.StringFilter<"Node"> | string
-  dataKind?: Prisma.EnumDataKindFilter<"Node"> | $Enums.DataKind
-  metaData?: Prisma.JsonNullableFilter<"Node">
-  workflowId?: Prisma.StringNullableFilter<"Node"> | string | null
-}
-
 export type NodeCreateWithoutWorkflowInput = {
   id: string
-  positionX: number
-  positionY: number
-  credentials?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  dataKind: $Enums.DataKind
-  metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  type: Prisma.NodeTypeCreateNestedOneWithoutNodesInput
-  credentialsTypes?: Prisma.CredentialsTypeCreateNestedManyWithoutNodeInput
+  type: string
+  position: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  data: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type NodeUncheckedCreateWithoutWorkflowInput = {
   id: string
-  positionX: number
-  positionY: number
-  credentials?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  typeId: string
-  dataKind: $Enums.DataKind
-  metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  credentialsTypes?: Prisma.CredentialsTypeUncheckedCreateNestedManyWithoutNodeInput
+  type: string
+  position: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  data: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type NodeCreateOrConnectWithoutWorkflowInput = {
@@ -655,264 +387,103 @@ export type NodeUpdateManyWithWhereWithoutWorkflowInput = {
   data: Prisma.XOR<Prisma.NodeUpdateManyMutationInput, Prisma.NodeUncheckedUpdateManyWithoutWorkflowInput>
 }
 
-export type NodeCreateWithoutCredentialsTypesInput = {
-  id: string
-  positionX: number
-  positionY: number
-  credentials?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  dataKind: $Enums.DataKind
-  metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  type: Prisma.NodeTypeCreateNestedOneWithoutNodesInput
-  workflow?: Prisma.WorkflowCreateNestedOneWithoutNodesInput
-}
-
-export type NodeUncheckedCreateWithoutCredentialsTypesInput = {
-  id: string
-  positionX: number
-  positionY: number
-  credentials?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  typeId: string
-  dataKind: $Enums.DataKind
-  metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  workflowId?: string | null
-}
-
-export type NodeCreateOrConnectWithoutCredentialsTypesInput = {
-  where: Prisma.NodeWhereUniqueInput
-  create: Prisma.XOR<Prisma.NodeCreateWithoutCredentialsTypesInput, Prisma.NodeUncheckedCreateWithoutCredentialsTypesInput>
-}
-
-export type NodeUpsertWithoutCredentialsTypesInput = {
-  update: Prisma.XOR<Prisma.NodeUpdateWithoutCredentialsTypesInput, Prisma.NodeUncheckedUpdateWithoutCredentialsTypesInput>
-  create: Prisma.XOR<Prisma.NodeCreateWithoutCredentialsTypesInput, Prisma.NodeUncheckedCreateWithoutCredentialsTypesInput>
-  where?: Prisma.NodeWhereInput
-}
-
-export type NodeUpdateToOneWithWhereWithoutCredentialsTypesInput = {
-  where?: Prisma.NodeWhereInput
-  data: Prisma.XOR<Prisma.NodeUpdateWithoutCredentialsTypesInput, Prisma.NodeUncheckedUpdateWithoutCredentialsTypesInput>
-}
-
-export type NodeUpdateWithoutCredentialsTypesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  positionX?: Prisma.FloatFieldUpdateOperationsInput | number
-  positionY?: Prisma.FloatFieldUpdateOperationsInput | number
-  credentials?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  dataKind?: Prisma.EnumDataKindFieldUpdateOperationsInput | $Enums.DataKind
-  metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  type?: Prisma.NodeTypeUpdateOneRequiredWithoutNodesNestedInput
-  workflow?: Prisma.WorkflowUpdateOneWithoutNodesNestedInput
-}
-
-export type NodeUncheckedUpdateWithoutCredentialsTypesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  positionX?: Prisma.FloatFieldUpdateOperationsInput | number
-  positionY?: Prisma.FloatFieldUpdateOperationsInput | number
-  credentials?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  typeId?: Prisma.StringFieldUpdateOperationsInput | string
-  dataKind?: Prisma.EnumDataKindFieldUpdateOperationsInput | $Enums.DataKind
-  metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  workflowId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-}
-
-export type NodeCreateManyTypeInput = {
-  id: string
-  positionX: number
-  positionY: number
-  credentials?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  dataKind: $Enums.DataKind
-  metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  workflowId?: string | null
-}
-
-export type NodeUpdateWithoutTypeInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  positionX?: Prisma.FloatFieldUpdateOperationsInput | number
-  positionY?: Prisma.FloatFieldUpdateOperationsInput | number
-  credentials?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  dataKind?: Prisma.EnumDataKindFieldUpdateOperationsInput | $Enums.DataKind
-  metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  workflow?: Prisma.WorkflowUpdateOneWithoutNodesNestedInput
-  credentialsTypes?: Prisma.CredentialsTypeUpdateManyWithoutNodeNestedInput
-}
-
-export type NodeUncheckedUpdateWithoutTypeInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  positionX?: Prisma.FloatFieldUpdateOperationsInput | number
-  positionY?: Prisma.FloatFieldUpdateOperationsInput | number
-  credentials?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  dataKind?: Prisma.EnumDataKindFieldUpdateOperationsInput | $Enums.DataKind
-  metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  workflowId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  credentialsTypes?: Prisma.CredentialsTypeUncheckedUpdateManyWithoutNodeNestedInput
-}
-
-export type NodeUncheckedUpdateManyWithoutTypeInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  positionX?: Prisma.FloatFieldUpdateOperationsInput | number
-  positionY?: Prisma.FloatFieldUpdateOperationsInput | number
-  credentials?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  dataKind?: Prisma.EnumDataKindFieldUpdateOperationsInput | $Enums.DataKind
-  metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  workflowId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+export type NodeScalarWhereInput = {
+  AND?: Prisma.NodeScalarWhereInput | Prisma.NodeScalarWhereInput[]
+  OR?: Prisma.NodeScalarWhereInput[]
+  NOT?: Prisma.NodeScalarWhereInput | Prisma.NodeScalarWhereInput[]
+  id?: Prisma.StringFilter<"Node"> | string
+  type?: Prisma.StringFilter<"Node"> | string
+  position?: Prisma.JsonFilter<"Node">
+  data?: Prisma.JsonFilter<"Node">
+  workflowId?: Prisma.StringNullableFilter<"Node"> | string | null
 }
 
 export type NodeCreateManyWorkflowInput = {
   id: string
-  positionX: number
-  positionY: number
-  credentials?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  typeId: string
-  dataKind: $Enums.DataKind
-  metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  type: string
+  position: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  data: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type NodeUpdateWithoutWorkflowInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  positionX?: Prisma.FloatFieldUpdateOperationsInput | number
-  positionY?: Prisma.FloatFieldUpdateOperationsInput | number
-  credentials?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  dataKind?: Prisma.EnumDataKindFieldUpdateOperationsInput | $Enums.DataKind
-  metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  type?: Prisma.NodeTypeUpdateOneRequiredWithoutNodesNestedInput
-  credentialsTypes?: Prisma.CredentialsTypeUpdateManyWithoutNodeNestedInput
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  position?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  data?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type NodeUncheckedUpdateWithoutWorkflowInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  positionX?: Prisma.FloatFieldUpdateOperationsInput | number
-  positionY?: Prisma.FloatFieldUpdateOperationsInput | number
-  credentials?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  typeId?: Prisma.StringFieldUpdateOperationsInput | string
-  dataKind?: Prisma.EnumDataKindFieldUpdateOperationsInput | $Enums.DataKind
-  metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  credentialsTypes?: Prisma.CredentialsTypeUncheckedUpdateManyWithoutNodeNestedInput
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  position?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  data?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type NodeUncheckedUpdateManyWithoutWorkflowInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  positionX?: Prisma.FloatFieldUpdateOperationsInput | number
-  positionY?: Prisma.FloatFieldUpdateOperationsInput | number
-  credentials?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  typeId?: Prisma.StringFieldUpdateOperationsInput | string
-  dataKind?: Prisma.EnumDataKindFieldUpdateOperationsInput | $Enums.DataKind
-  metaData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  position?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  data?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
-
-/**
- * Count Type NodeCountOutputType
- */
-
-export type NodeCountOutputType = {
-  credentialsTypes: number
-}
-
-export type NodeCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  credentialsTypes?: boolean | NodeCountOutputTypeCountCredentialsTypesArgs
-}
-
-/**
- * NodeCountOutputType without action
- */
-export type NodeCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the NodeCountOutputType
-   */
-  select?: Prisma.NodeCountOutputTypeSelect<ExtArgs> | null
-}
-
-/**
- * NodeCountOutputType without action
- */
-export type NodeCountOutputTypeCountCredentialsTypesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.CredentialsTypeWhereInput
-}
 
 
 export type NodeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  positionX?: boolean
-  positionY?: boolean
-  credentials?: boolean
-  typeId?: boolean
-  dataKind?: boolean
-  metaData?: boolean
+  type?: boolean
+  position?: boolean
+  data?: boolean
   workflowId?: boolean
-  type?: boolean | Prisma.NodeTypeDefaultArgs<ExtArgs>
   workflow?: boolean | Prisma.Node$workflowArgs<ExtArgs>
-  credentialsTypes?: boolean | Prisma.Node$credentialsTypesArgs<ExtArgs>
-  _count?: boolean | Prisma.NodeCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["node"]>
 
 export type NodeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  positionX?: boolean
-  positionY?: boolean
-  credentials?: boolean
-  typeId?: boolean
-  dataKind?: boolean
-  metaData?: boolean
+  type?: boolean
+  position?: boolean
+  data?: boolean
   workflowId?: boolean
-  type?: boolean | Prisma.NodeTypeDefaultArgs<ExtArgs>
   workflow?: boolean | Prisma.Node$workflowArgs<ExtArgs>
 }, ExtArgs["result"]["node"]>
 
 export type NodeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  positionX?: boolean
-  positionY?: boolean
-  credentials?: boolean
-  typeId?: boolean
-  dataKind?: boolean
-  metaData?: boolean
+  type?: boolean
+  position?: boolean
+  data?: boolean
   workflowId?: boolean
-  type?: boolean | Prisma.NodeTypeDefaultArgs<ExtArgs>
   workflow?: boolean | Prisma.Node$workflowArgs<ExtArgs>
 }, ExtArgs["result"]["node"]>
 
 export type NodeSelectScalar = {
   id?: boolean
-  positionX?: boolean
-  positionY?: boolean
-  credentials?: boolean
-  typeId?: boolean
-  dataKind?: boolean
-  metaData?: boolean
+  type?: boolean
+  position?: boolean
+  data?: boolean
   workflowId?: boolean
 }
 
-export type NodeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "positionX" | "positionY" | "credentials" | "typeId" | "dataKind" | "metaData" | "workflowId", ExtArgs["result"]["node"]>
+export type NodeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "position" | "data" | "workflowId", ExtArgs["result"]["node"]>
 export type NodeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  type?: boolean | Prisma.NodeTypeDefaultArgs<ExtArgs>
   workflow?: boolean | Prisma.Node$workflowArgs<ExtArgs>
-  credentialsTypes?: boolean | Prisma.Node$credentialsTypesArgs<ExtArgs>
-  _count?: boolean | Prisma.NodeCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type NodeIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  type?: boolean | Prisma.NodeTypeDefaultArgs<ExtArgs>
   workflow?: boolean | Prisma.Node$workflowArgs<ExtArgs>
 }
 export type NodeIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  type?: boolean | Prisma.NodeTypeDefaultArgs<ExtArgs>
   workflow?: boolean | Prisma.Node$workflowArgs<ExtArgs>
 }
 
 export type $NodePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Node"
   objects: {
-    type: Prisma.$NodeTypePayload<ExtArgs>
     workflow: Prisma.$WorkflowPayload<ExtArgs> | null
-    credentialsTypes: Prisma.$CredentialsTypePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    positionX: number
-    positionY: number
-    credentials: runtime.JsonValue | null
-    typeId: string
-    dataKind: $Enums.DataKind
-    metaData: runtime.JsonValue | null
+    type: string
+    position: runtime.JsonValue
+    data: runtime.JsonValue
     workflowId: string | null
   }, ExtArgs["result"]["node"]>
   composites: {}
@@ -1308,9 +879,7 @@ readonly fields: NodeFieldRefs;
  */
 export interface Prisma__NodeClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  type<T extends Prisma.NodeTypeDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.NodeTypeDefaultArgs<ExtArgs>>): Prisma.Prisma__NodeTypeClient<runtime.Types.Result.GetResult<Prisma.$NodeTypePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   workflow<T extends Prisma.Node$workflowArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Node$workflowArgs<ExtArgs>>): Prisma.Prisma__WorkflowClient<runtime.Types.Result.GetResult<Prisma.$WorkflowPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  credentialsTypes<T extends Prisma.Node$credentialsTypesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Node$credentialsTypesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CredentialsTypePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1341,12 +910,9 @@ export interface Prisma__NodeClient<T, Null = never, ExtArgs extends runtime.Typ
  */
 export interface NodeFieldRefs {
   readonly id: Prisma.FieldRef<"Node", 'String'>
-  readonly positionX: Prisma.FieldRef<"Node", 'Float'>
-  readonly positionY: Prisma.FieldRef<"Node", 'Float'>
-  readonly credentials: Prisma.FieldRef<"Node", 'Json'>
-  readonly typeId: Prisma.FieldRef<"Node", 'String'>
-  readonly dataKind: Prisma.FieldRef<"Node", 'DataKind'>
-  readonly metaData: Prisma.FieldRef<"Node", 'Json'>
+  readonly type: Prisma.FieldRef<"Node", 'String'>
+  readonly position: Prisma.FieldRef<"Node", 'Json'>
+  readonly data: Prisma.FieldRef<"Node", 'Json'>
   readonly workflowId: Prisma.FieldRef<"Node", 'String'>
 }
     
@@ -1760,30 +1326,6 @@ export type Node$workflowArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    */
   include?: Prisma.WorkflowInclude<ExtArgs> | null
   where?: Prisma.WorkflowWhereInput
-}
-
-/**
- * Node.credentialsTypes
- */
-export type Node$credentialsTypesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the CredentialsType
-   */
-  select?: Prisma.CredentialsTypeSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the CredentialsType
-   */
-  omit?: Prisma.CredentialsTypeOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.CredentialsTypeInclude<ExtArgs> | null
-  where?: Prisma.CredentialsTypeWhereInput
-  orderBy?: Prisma.CredentialsTypeOrderByWithRelationInput | Prisma.CredentialsTypeOrderByWithRelationInput[]
-  cursor?: Prisma.CredentialsTypeWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.CredentialsTypeScalarFieldEnum | Prisma.CredentialsTypeScalarFieldEnum[]
 }
 
 /**

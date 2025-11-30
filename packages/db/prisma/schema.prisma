@@ -25,29 +25,13 @@ model Edge {
   @@index([workflowId])
 }
 
-enum DataKind {
-  ACTION
-  TRIGGER
-}
-
-model NodeType {
-  id    String @id @default(cuid())
-  name  String @unique
-  nodes Node[]
-}
-
 model Node {
-  id               String            @id
-  positionX        Float
-  positionY        Float
-  credentials      Json?
-  typeId           String
-  type             NodeType          @relation(fields: [typeId], references: [id])
-  dataKind         DataKind
-  metaData         Json?
-  workflow         Workflow?         @relation(fields: [workflowId], references: [id])
-  workflowId       String?
-  credentialsTypes CredentialsType[]
+  id         String    @id
+  type       String
+  position   Json
+  data       Json
+  workflow   Workflow? @relation(fields: [workflowId], references: [id])
+  workflowId String?
 
   @@index([workflowId])
 }
@@ -64,7 +48,6 @@ model Workflow {
 }
 
 enum ExecutionStatus {
-  PENDING
   SUCCESS
   FAILURE
 }
@@ -73,20 +56,10 @@ model Execution {
   id         String          @id @default(cuid())
   workflowId String
   workflow   Workflow        @relation(fields: [workflowId], references: [id])
-  status     ExecutionStatus @default(PENDING)
+  status     ExecutionStatus
   startTime  DateTime        @default(now())
   endTime    DateTime?
 
   @@index([workflowId])
   @@index([status])
-}
-
-model CredentialsType {
-  id       String  @id @default(cuid())
-  title    String
-  required Boolean
-  nodeId   String
-  node     Node    @relation(fields: [nodeId], references: [id])
-
-  @@index([nodeId])
 }

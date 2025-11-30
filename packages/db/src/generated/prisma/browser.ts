@@ -28,11 +28,6 @@ export type User = Prisma.UserModel
  */
 export type Edge = Prisma.EdgeModel
 /**
- * Model NodeType
- * 
- */
-export type NodeType = Prisma.NodeTypeModel
-/**
  * Model Node
  * 
  */
@@ -47,8 +42,3 @@ export type Workflow = Prisma.WorkflowModel
  * 
  */
 export type Execution = Prisma.ExecutionModel
-/**
- * Model CredentialsType
- * 
- */
-export type CredentialsType = Prisma.CredentialsTypeModel

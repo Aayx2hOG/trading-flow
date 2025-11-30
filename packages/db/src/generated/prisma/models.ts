@@ -10,9 +10,7 @@
  */
 export type * from './models/User.ts'
 export type * from './models/Edge.ts'
-export type * from './models/NodeType.ts'
 export type * from './models/Node.ts'
 export type * from './models/Workflow.ts'
 export type * from './models/Execution.ts'
-export type * from './models/CredentialsType.ts'
 export type * from './commonInputTypes.ts'

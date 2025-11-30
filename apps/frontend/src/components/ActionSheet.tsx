@@ -60,7 +60,7 @@ export const ActionSheet = ({
                         <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select an action" />
                         </SelectTrigger>
-                        <SelectContent className="[&_[data-radix-select-viewport]]:pl-2">
+                        <SelectContent className="**:data-radix-select-viewport:pl-2">
                             <SelectGroup>
                                 {SUPPORTED_ACTIONS.map(({ id, title }) =>
                                     <SelectItem key={id} value={id}>
@@ -82,7 +82,7 @@ export const ActionSheet = ({
                                 <SelectTrigger className="w-full">
                                     <SelectValue placeholder="Select position type" />
                                 </SelectTrigger>
-                                <SelectContent className="[&_[data-radix-select-viewport]]:pl-2">
+                                <SelectContent className="**:data-radix-select-viewport:pl-2">
                                     <SelectGroup>
                                         <SelectItem value={'long'}>
                                             <span className="font-medium">LONG</span>
@@ -103,7 +103,7 @@ export const ActionSheet = ({
                                 <SelectTrigger className="w-full">
                                     <SelectValue placeholder="Select a symbol" />
                                 </SelectTrigger>
-                                <SelectContent className="[&_[data-radix-select-viewport]]:pl-2">
+                                <SelectContent className="**:data-radix-select-viewport:pl-2">
                                     <SelectGroup>
                                         {SUPPORTED_ASSETS.map(asset =>
                                             <SelectItem key={asset} value={asset}>

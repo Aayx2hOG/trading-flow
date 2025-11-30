@@ -386,11 +386,9 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   User: 'User',
   Edge: 'Edge',
-  NodeType: 'NodeType',
   Node: 'Node',
   Workflow: 'Workflow',
-  Execution: 'Execution',
-  CredentialsType: 'CredentialsType'
+  Execution: 'Execution'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -406,7 +404,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "edge" | "nodeType" | "node" | "workflow" | "execution" | "credentialsType"
+    modelProps: "user" | "edge" | "node" | "workflow" | "execution"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -555,80 +553,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.EdgeCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.EdgeCountAggregateOutputType> | number
-        }
-      }
-    }
-    NodeType: {
-      payload: Prisma.$NodeTypePayload<ExtArgs>
-      fields: Prisma.NodeTypeFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.NodeTypeFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$NodeTypePayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.NodeTypeFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$NodeTypePayload>
-        }
-        findFirst: {
-          args: Prisma.NodeTypeFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$NodeTypePayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.NodeTypeFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$NodeTypePayload>
-        }
-        findMany: {
-          args: Prisma.NodeTypeFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$NodeTypePayload>[]
-        }
-        create: {
-          args: Prisma.NodeTypeCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$NodeTypePayload>
-        }
-        createMany: {
-          args: Prisma.NodeTypeCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.NodeTypeCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$NodeTypePayload>[]
-        }
-        delete: {
-          args: Prisma.NodeTypeDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$NodeTypePayload>
-        }
-        update: {
-          args: Prisma.NodeTypeUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$NodeTypePayload>
-        }
-        deleteMany: {
-          args: Prisma.NodeTypeDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.NodeTypeUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.NodeTypeUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$NodeTypePayload>[]
-        }
-        upsert: {
-          args: Prisma.NodeTypeUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$NodeTypePayload>
-        }
-        aggregate: {
-          args: Prisma.NodeTypeAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateNodeType>
-        }
-        groupBy: {
-          args: Prisma.NodeTypeGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.NodeTypeGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.NodeTypeCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.NodeTypeCountAggregateOutputType> | number
         }
       }
     }
@@ -854,80 +778,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    CredentialsType: {
-      payload: Prisma.$CredentialsTypePayload<ExtArgs>
-      fields: Prisma.CredentialsTypeFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.CredentialsTypeFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CredentialsTypePayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.CredentialsTypeFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CredentialsTypePayload>
-        }
-        findFirst: {
-          args: Prisma.CredentialsTypeFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CredentialsTypePayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.CredentialsTypeFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CredentialsTypePayload>
-        }
-        findMany: {
-          args: Prisma.CredentialsTypeFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CredentialsTypePayload>[]
-        }
-        create: {
-          args: Prisma.CredentialsTypeCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CredentialsTypePayload>
-        }
-        createMany: {
-          args: Prisma.CredentialsTypeCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.CredentialsTypeCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CredentialsTypePayload>[]
-        }
-        delete: {
-          args: Prisma.CredentialsTypeDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CredentialsTypePayload>
-        }
-        update: {
-          args: Prisma.CredentialsTypeUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CredentialsTypePayload>
-        }
-        deleteMany: {
-          args: Prisma.CredentialsTypeDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.CredentialsTypeUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.CredentialsTypeUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CredentialsTypePayload>[]
-        }
-        upsert: {
-          args: Prisma.CredentialsTypeUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$CredentialsTypePayload>
-        }
-        aggregate: {
-          args: Prisma.CredentialsTypeAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateCredentialsType>
-        }
-        groupBy: {
-          args: Prisma.CredentialsTypeGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.CredentialsTypeGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.CredentialsTypeCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.CredentialsTypeCountAggregateOutputType> | number
-        }
-      }
-    }
   }
 } & {
   other: {
@@ -987,22 +837,11 @@ export const EdgeScalarFieldEnum = {
 export type EdgeScalarFieldEnum = (typeof EdgeScalarFieldEnum)[keyof typeof EdgeScalarFieldEnum]
 
 
-export const NodeTypeScalarFieldEnum = {
-  id: 'id',
-  name: 'name'
-} as const
-
-export type NodeTypeScalarFieldEnum = (typeof NodeTypeScalarFieldEnum)[keyof typeof NodeTypeScalarFieldEnum]
-
-
 export const NodeScalarFieldEnum = {
   id: 'id',
-  positionX: 'positionX',
-  positionY: 'positionY',
-  credentials: 'credentials',
-  typeId: 'typeId',
-  dataKind: 'dataKind',
-  metaData: 'metaData',
+  type: 'type',
+  position: 'position',
+  data: 'data',
   workflowId: 'workflowId'
 } as const
 
@@ -1028,16 +867,6 @@ export const ExecutionScalarFieldEnum = {
 export type ExecutionScalarFieldEnum = (typeof ExecutionScalarFieldEnum)[keyof typeof ExecutionScalarFieldEnum]
 
 
-export const CredentialsTypeScalarFieldEnum = {
-  id: 'id',
-  title: 'title',
-  required: 'required',
-  nodeId: 'nodeId'
-} as const
-
-export type CredentialsTypeScalarFieldEnum = (typeof CredentialsTypeScalarFieldEnum)[keyof typeof CredentialsTypeScalarFieldEnum]
-
-
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1046,12 +875,11 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
-export const NullableJsonNullValueInput = {
-  DbNull: DbNull,
+export const JsonNullValueInput = {
   JsonNull: JsonNull
 } as const
 
-export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -1100,20 +928,6 @@ export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMod
 
 
 /**
- * Reference to a field of type 'Float'
- */
-export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
-    
-
-
-/**
- * Reference to a field of type 'Float[]'
- */
-export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
-    
-
-
-/**
  * Reference to a field of type 'Json'
  */
 export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
@@ -1124,20 +938,6 @@ export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'J
  * Reference to a field of type 'QueryMode'
  */
 export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
-    
-
-
-/**
- * Reference to a field of type 'DataKind'
- */
-export type EnumDataKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DataKind'>
-    
-
-
-/**
- * Reference to a field of type 'DataKind[]'
- */
-export type ListEnumDataKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DataKind[]'>
     
 
 
@@ -1166,13 +966,6 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
  * Reference to a field of type 'DateTime[]'
  */
 export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
-    
-
-
-/**
- * Reference to a field of type 'Boolean'
- */
-export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -1270,11 +1063,9 @@ export type PrismaClientOptions = ({
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   edge?: Prisma.EdgeOmit
-  nodeType?: Prisma.NodeTypeOmit
   node?: Prisma.NodeOmit
   workflow?: Prisma.WorkflowOmit
   execution?: Prisma.ExecutionOmit
-  credentialsType?: Prisma.CredentialsTypeOmit
 }
 
 /* Types for Logging */

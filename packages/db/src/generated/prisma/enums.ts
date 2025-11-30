@@ -9,16 +9,7 @@
 * 🟢 You can import this file directly.
 */
 
-export const DataKind = {
-  ACTION: 'ACTION',
-  TRIGGER: 'TRIGGER'
-} as const
-
-export type DataKind = (typeof DataKind)[keyof typeof DataKind]
-
-
 export const ExecutionStatus = {
-  PENDING: 'PENDING',
   SUCCESS: 'SUCCESS',
   FAILURE: 'FAILURE'
 } as const

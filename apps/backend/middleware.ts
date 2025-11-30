@@ -1,19 +1,24 @@
 import type { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
+import jwt, { type JwtPayload } from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || '';
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this';
 
 export function authMiddleware(req: Request, res: Response, next: NextFunction) {
-    const token = req.headers['authorization'];
-    if (!token) {
-        return res.status(401).json({ error: "Unauthorized" });
+    const authHeader = req.headers['authorization'];
+
+    if (!authHeader) {
+        return res.status(401).json({ message: "No authorization header" });
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET);
-    console.log(decoded);
-    if (!decoded || !decoded.sub) {
-        return res.status(401).json({ error: "Unauthorized" });
+    const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : authHeader;
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
+        console.log('Decoded JWT:', decoded); // Debug log
+        req.userId = decoded.userId as string;
+        next();
+    } catch (e) {
+        console.error('JWT verification error:', e); // Debug log
+        return res.status(401).json({ message: "Invalid or expired token" });
     }
-    req.userId = decoded.sub as string;
-    next();
 }

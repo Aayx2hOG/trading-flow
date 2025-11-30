@@ -57,7 +57,7 @@ export const TriggerSheet = ({
                         <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select a trigger" />
                         </SelectTrigger>
-                        <SelectContent className="[&_[data-radix-select-viewport]]:pl-2">
+                        <SelectContent className="**:data-radix-select-viewport:pl-2">
                             <SelectGroup>
                                 {SUPPORTED_TRIGGERS.map(({ id, title }) =>
                                     <SelectItem key={id} value={id}>
@@ -94,7 +94,7 @@ export const TriggerSheet = ({
                                 <SelectTrigger className="w-full">
                                     <SelectValue placeholder="Select an asset" />
                                 </SelectTrigger>
-                                <SelectContent className="[&_[data-radix-select-viewport]]:pl-2">
+                                <SelectContent className="**:data-radix-select-viewport:pl-2">
                                     <SelectGroup>
                                         {SUPPORTED_ASSETS.map((id) =>
                                             <SelectItem key={id} value={id}>{id}</SelectItem>
