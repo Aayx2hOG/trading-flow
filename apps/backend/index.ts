@@ -81,12 +81,8 @@ app.post('/workflow', authMiddleware, async (req: Request, res: Response) => {
                 user: {
                     connect: { id: userId }
                 },
-                nodes: {
-                    create: data.nodes
-                },
-                edges: {
-                    create: data.edges
-                }
+                nodes: data.nodes,
+                edges: data.edges
             }
         });
         res.status(201).json({ workflowId: workflow.id });
@@ -96,19 +92,55 @@ app.post('/workflow', authMiddleware, async (req: Request, res: Response) => {
     }
 });
 
-app.put('/workflow', authMiddleware, async (req: Request, res: Response) => {
+app.put('/workflow/:workflowId', authMiddleware, async (req: Request, res: Response) => {
+    const { success, data } = CreateWorkflowSchema.safeParse(req.body);
+    if (!success) {
+        return res.status(400).json({ error: 'Invalid workflow data' });
+    }
 
+    try {
+        const workflow = await prismaClient.workflow.update({
+            where: { id: req.params.workflowId },
+            data: {
+                nodes: data.nodes,
+                edges: data.edges
+            }
+        });
+        res.status(200).json({ workflowId: workflow.id });
+    } catch (error) {
+        console.error('Workflow update error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
 });
 
-app.put('/workflow/:workflowId', authMiddleware, async (req: Request, res: Response) => {
+app.get('/workflows', authMiddleware, async (req: Request, res: Response) => {
+    const workflows = await prismaClient.workflow.findMany({
+        where: { userId: req.userId }
+    });
+    res.json(workflows);
+});
 
+app.get('/workflow/:workflowId', authMiddleware, async (req: Request, res: Response) => {
+    const workflow = await prismaClient.workflow.findUnique({
+        where: { id: req.params.workflowId }
+    });
+    if (!workflow || workflow.userId.toString() !== req.userId) {
+        return res.status(404).json({ error: 'Workflow not found' });
+    }
+    res.json(workflow);
 });
 
 app.get('/workflow/executions/:workflowId', authMiddleware, async (req: Request, res: Response) => {
-});
+    const workflow = await prismaClient.workflow.findUnique({
+        where: { id: req.params.workflowId },
+        include: { executions: true }
+    });
 
-app.get('/nodes', async (req: Request, res: Response) => {
+    if (!workflow || workflow.userId !== req.userId) {
+        return res.status(404).json({ error: 'Workflow not found' });
+    }
 
+    res.json(workflow.executions);
 });
 
 app.listen(process.env.PORT || 3000); 

@@ -23,16 +23,6 @@ export * from './enums.ts';
  */
 export type User = Prisma.UserModel
 /**
- * Model Edge
- * 
- */
-export type Edge = Prisma.EdgeModel
-/**
- * Model Node
- * 
- */
-export type Node = Prisma.NodeModel
-/**
  * Model Workflow
  * 
  */

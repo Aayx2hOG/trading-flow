@@ -20,7 +20,7 @@ const config: runtime.GetPrismaClientConfig = {
   "clientVersion": "7.0.1",
   "engineVersion": "f09f2815f091dbba658cdcd2264306d88bb5bda6",
   "activeProvider": "postgresql",
-  "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel User {\n  id        String     @id @default(cuid())\n  email     String     @unique\n  username  String     @unique\n  password  String\n  workflows Workflow[]\n}\n\nmodel Edge {\n  id         String    @id\n  source     String\n  target     String\n  workflow   Workflow? @relation(fields: [workflowId], references: [id])\n  workflowId String?\n\n  @@index([workflowId])\n}\n\nmodel Node {\n  id         String    @id\n  type       String\n  position   Json\n  data       Json\n  workflow   Workflow? @relation(fields: [workflowId], references: [id])\n  workflowId String?\n\n  @@index([workflowId])\n}\n\nmodel Workflow {\n  id         String      @id @default(cuid())\n  userId     String\n  user       User        @relation(fields: [userId], references: [id])\n  nodes      Node[]\n  edges      Edge[]\n  executions Execution[]\n\n  @@index([userId])\n}\n\nenum ExecutionStatus {\n  SUCCESS\n  FAILURE\n}\n\nmodel Execution {\n  id         String          @id @default(cuid())\n  workflowId String\n  workflow   Workflow        @relation(fields: [workflowId], references: [id])\n  status     ExecutionStatus\n  startTime  DateTime        @default(now())\n  endTime    DateTime?\n\n  @@index([workflowId])\n  @@index([status])\n}\n",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel User {\n  id        String     @id @default(cuid())\n  email     String     @unique\n  username  String     @unique\n  password  String\n  workflows Workflow[]\n}\n\nmodel Workflow {\n  id         String      @id @default(cuid())\n  user       User        @relation(fields: [userId], references: [id])\n  userId     String\n  nodes      Json        @default(\"[]\")\n  edges      Json        @default(\"[]\")\n  executions Execution[]\n\n  @@index([userId])\n}\n\nenum ExecutionStatus {\n  SUCCESS\n  FAILURE\n}\n\nmodel Execution {\n  id         String          @id @default(cuid())\n  workflowId String\n  workflow   Workflow        @relation(fields: [workflowId], references: [id])\n  status     ExecutionStatus\n  startTime  DateTime        @default(now())\n  endTime    DateTime?\n\n  @@index([workflowId])\n  @@index([status])\n}\n",
   "runtimeDataModel": {
     "models": {},
     "enums": {},
@@ -28,7 +28,7 @@ const config: runtime.GetPrismaClientConfig = {
   }
 }
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"username\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"workflows\",\"kind\":\"object\",\"type\":\"Workflow\",\"relationName\":\"UserToWorkflow\"}],\"dbName\":null},\"Edge\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"source\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"target\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"workflow\",\"kind\":\"object\",\"type\":\"Workflow\",\"relationName\":\"EdgeToWorkflow\"},{\"name\":\"workflowId\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null},\"Node\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"position\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"data\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"workflow\",\"kind\":\"object\",\"type\":\"Workflow\",\"relationName\":\"NodeToWorkflow\"},{\"name\":\"workflowId\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null},\"Workflow\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"UserToWorkflow\"},{\"name\":\"nodes\",\"kind\":\"object\",\"type\":\"Node\",\"relationName\":\"NodeToWorkflow\"},{\"name\":\"edges\",\"kind\":\"object\",\"type\":\"Edge\",\"relationName\":\"EdgeToWorkflow\"},{\"name\":\"executions\",\"kind\":\"object\",\"type\":\"Execution\",\"relationName\":\"ExecutionToWorkflow\"}],\"dbName\":null},\"Execution\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"workflowId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"workflow\",\"kind\":\"object\",\"type\":\"Workflow\",\"relationName\":\"ExecutionToWorkflow\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"ExecutionStatus\"},{\"name\":\"startTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"endTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"username\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"workflows\",\"kind\":\"object\",\"type\":\"Workflow\",\"relationName\":\"UserToWorkflow\"}],\"dbName\":null},\"Workflow\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"UserToWorkflow\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"nodes\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"edges\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"executions\",\"kind\":\"object\",\"type\":\"Execution\",\"relationName\":\"ExecutionToWorkflow\"}],\"dbName\":null},\"Execution\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"workflowId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"workflow\",\"kind\":\"object\",\"type\":\"Workflow\",\"relationName\":\"ExecutionToWorkflow\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"ExecutionStatus\"},{\"name\":\"startTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"endTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 
 async function decodeBase64AsWasm(wasmBase64: string): Promise<WebAssembly.Module> {
   const { Buffer } = await import('node:buffer')
@@ -183,26 +183,6 @@ export interface PrismaClient<
     * ```
     */
   get user(): Prisma.UserDelegate<ExtArgs, { omit: OmitOpts }>;
-
-  /**
-   * `prisma.edge`: Exposes CRUD operations for the **Edge** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Edges
-    * const edges = await prisma.edge.findMany()
-    * ```
-    */
-  get edge(): Prisma.EdgeDelegate<ExtArgs, { omit: OmitOpts }>;
-
-  /**
-   * `prisma.node`: Exposes CRUD operations for the **Node** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Nodes
-    * const nodes = await prisma.node.findMany()
-    * ```
-    */
-  get node(): Prisma.NodeDelegate<ExtArgs, { omit: OmitOpts }>;
 
   /**
    * `prisma.workflow`: Exposes CRUD operations for the **Workflow** model.

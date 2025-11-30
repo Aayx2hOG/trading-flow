@@ -385,8 +385,6 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   User: 'User',
-  Edge: 'Edge',
-  Node: 'Node',
   Workflow: 'Workflow',
   Execution: 'Execution'
 } as const
@@ -404,7 +402,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "edge" | "node" | "workflow" | "execution"
+    modelProps: "user" | "workflow" | "execution"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -479,154 +477,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.UserCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.UserCountAggregateOutputType> | number
-        }
-      }
-    }
-    Edge: {
-      payload: Prisma.$EdgePayload<ExtArgs>
-      fields: Prisma.EdgeFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.EdgeFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EdgePayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.EdgeFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EdgePayload>
-        }
-        findFirst: {
-          args: Prisma.EdgeFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EdgePayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.EdgeFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EdgePayload>
-        }
-        findMany: {
-          args: Prisma.EdgeFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EdgePayload>[]
-        }
-        create: {
-          args: Prisma.EdgeCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EdgePayload>
-        }
-        createMany: {
-          args: Prisma.EdgeCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.EdgeCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EdgePayload>[]
-        }
-        delete: {
-          args: Prisma.EdgeDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EdgePayload>
-        }
-        update: {
-          args: Prisma.EdgeUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EdgePayload>
-        }
-        deleteMany: {
-          args: Prisma.EdgeDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.EdgeUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.EdgeUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EdgePayload>[]
-        }
-        upsert: {
-          args: Prisma.EdgeUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$EdgePayload>
-        }
-        aggregate: {
-          args: Prisma.EdgeAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateEdge>
-        }
-        groupBy: {
-          args: Prisma.EdgeGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.EdgeGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.EdgeCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.EdgeCountAggregateOutputType> | number
-        }
-      }
-    }
-    Node: {
-      payload: Prisma.$NodePayload<ExtArgs>
-      fields: Prisma.NodeFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.NodeFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$NodePayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.NodeFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$NodePayload>
-        }
-        findFirst: {
-          args: Prisma.NodeFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$NodePayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.NodeFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$NodePayload>
-        }
-        findMany: {
-          args: Prisma.NodeFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$NodePayload>[]
-        }
-        create: {
-          args: Prisma.NodeCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$NodePayload>
-        }
-        createMany: {
-          args: Prisma.NodeCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.NodeCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$NodePayload>[]
-        }
-        delete: {
-          args: Prisma.NodeDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$NodePayload>
-        }
-        update: {
-          args: Prisma.NodeUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$NodePayload>
-        }
-        deleteMany: {
-          args: Prisma.NodeDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.NodeUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.NodeUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$NodePayload>[]
-        }
-        upsert: {
-          args: Prisma.NodeUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$NodePayload>
-        }
-        aggregate: {
-          args: Prisma.NodeAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateNode>
-        }
-        groupBy: {
-          args: Prisma.NodeGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.NodeGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.NodeCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.NodeCountAggregateOutputType> | number
         }
       }
     }
@@ -827,30 +677,11 @@ export const UserScalarFieldEnum = {
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
-export const EdgeScalarFieldEnum = {
-  id: 'id',
-  source: 'source',
-  target: 'target',
-  workflowId: 'workflowId'
-} as const
-
-export type EdgeScalarFieldEnum = (typeof EdgeScalarFieldEnum)[keyof typeof EdgeScalarFieldEnum]
-
-
-export const NodeScalarFieldEnum = {
-  id: 'id',
-  type: 'type',
-  position: 'position',
-  data: 'data',
-  workflowId: 'workflowId'
-} as const
-
-export type NodeScalarFieldEnum = (typeof NodeScalarFieldEnum)[keyof typeof NodeScalarFieldEnum]
-
-
 export const WorkflowScalarFieldEnum = {
   id: 'id',
-  userId: 'userId'
+  userId: 'userId',
+  nodes: 'nodes',
+  edges: 'edges'
 } as const
 
 export type WorkflowScalarFieldEnum = (typeof WorkflowScalarFieldEnum)[keyof typeof WorkflowScalarFieldEnum]
@@ -890,14 +721,6 @@ export const QueryMode = {
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
-export const NullsOrder = {
-  first: 'first',
-  last: 'last'
-} as const
-
-export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
-
-
 export const JsonNullValueFilter = {
   DbNull: DbNull,
   JsonNull: JsonNull,
@@ -905,6 +728,14 @@ export const JsonNullValueFilter = {
 } as const
 
 export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
 
@@ -1062,8 +893,6 @@ export type PrismaClientOptions = ({
 }
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
-  edge?: Prisma.EdgeOmit
-  node?: Prisma.NodeOmit
   workflow?: Prisma.WorkflowOmit
   execution?: Prisma.ExecutionOmit
 }

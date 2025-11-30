@@ -15,33 +15,12 @@ model User {
   workflows Workflow[]
 }
 
-model Edge {
-  id         String    @id
-  source     String
-  target     String
-  workflow   Workflow? @relation(fields: [workflowId], references: [id])
-  workflowId String?
-
-  @@index([workflowId])
-}
-
-model Node {
-  id         String    @id
-  type       String
-  position   Json
-  data       Json
-  workflow   Workflow? @relation(fields: [workflowId], references: [id])
-  workflowId String?
-
-  @@index([workflowId])
-}
-
 model Workflow {
   id         String      @id @default(cuid())
-  userId     String
   user       User        @relation(fields: [userId], references: [id])
-  nodes      Node[]
-  edges      Edge[]
+  userId     String
+  nodes      Json        @default("[]")
+  edges      Json        @default("[]")
   executions Execution[]
 
   @@index([userId])
