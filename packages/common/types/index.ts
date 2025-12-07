@@ -52,3 +52,21 @@ export const updateWorkflowSchema = z.object({
         target: z.string()
     }))
 })
+
+export interface ActionResult {
+    success: boolean;
+    data?: any;
+    error?: string;
+}
+
+export interface ActionCredentials {
+    [key: string]: string;
+}
+
+export interface ActionMetadata {
+    [key: string]: any;
+}
+
+export interface IAction {
+    execute(credentials: ActionCredentials, metadata: ActionMetadata, inputData?: any): Promise<ActionResult>;
+}
