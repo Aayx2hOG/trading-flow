@@ -1,3 +1,4 @@
+import { prismaClient } from "db/client";
 import type { IAction } from "../../../packages/common/types";
 import { BackpackAction } from "./actions/backpack.action";
 import { HttpAction } from "./actions/http.action";
@@ -30,10 +31,64 @@ export class WorkflowExecutor {
     private actions: Map<string, IAction> = new Map();
 
     constructor() {
-        this.actions.set('HttpAction', new (HttpAction)());
-        this.actions.set('LighterAction', new (LighterAction)());
-        this.actions.set('BackpackAction', new (BackpackAction)());
-        this.actions.set('HyperliquidAction', new (HyperliquidAction)());
+        this.actions.set('http', new HttpAction());
+        this.actions.set('lighter', new LighterAction());
+        this.actions.set('backpack', new BackpackAction());
+        this.actions.set('hyperliquid', new HyperliquidAction());
+    }
+
+    async executeWorkflowById(workflowId: string, triggerData?: any): Promise<string> {
+        const workflow = await prismaClient.workflow.findUnique({
+            where: { id: workflowId },
+        });
+
+        if (!workflow) {
+            throw new Error(`Workflow with id ${workflowId} not found`);
+        }
+
+        const execution = await prismaClient.execution.create({
+            data: {
+                workflowId,
+                status: 'SUCCESS',
+                startTime: new Date(),
+            },
+        });
+
+        try {
+            const workflowData: Workflow = {
+                nodes: workflow.nodes as unknown as Node[],
+                edges: workflow.edges as unknown as Edge[],
+            }
+
+            if (triggerData) {
+                const triggerNode = workflowData.nodes.find(n => n.data.kind === 'trigger');
+                if (triggerNode) {
+                    triggerNode.data.metaData = { ...triggerNode.data.metaData, ...triggerData };
+                }
+            }
+            const result = await this.execute(workflowData);
+
+            await prismaClient.execution.update({
+                where: { id: execution.id },
+                data: {
+                    status: result.success ? 'SUCCESS' : 'FAILURE',
+                    endTime: new Date(),
+                },
+            });
+            if (!result.success) {
+                throw new Error(result.error || 'Workflow execution failed');
+            }
+            return execution.id;
+        } catch (e) {
+            await prismaClient.execution.update({
+                where: { id: execution.id },
+                data: {
+                    status: 'FAILURE',
+                    endTime: new Date(),
+                },
+            });
+            throw e;
+        }
     }
 
     async execute(workflow: Workflow): Promise<{ success: boolean, results: any[]; error?: string }> {
