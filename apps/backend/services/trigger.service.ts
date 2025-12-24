@@ -36,12 +36,12 @@ export class TriggerService {
             return;
         }
         const nodes = workflow.nodes as any[];
-        const triggerNode = nodes.find(n => n.data.kind === 'trigger');
-        if (!triggerNode) {
-            console.warn(`No trigger node found for workflow with id ${workflowId}`);
+        const triggerNodes = nodes.filter(n => n.data && n.data.kind === 'trigger');
+        if (!triggerNodes.length) {
+            console.warn(`No trigger nodes found for workflow with id ${workflowId}`);
             return;
         }
-        for (const trigger of triggerNode) {
+        for (const trigger of triggerNodes) {
             if (trigger.type === "price-trigger") {
                 this.startPriceTrigger(workflowId, trigger.data.metaData);
             } else if (trigger.type === "timer-trigger") {
@@ -50,22 +50,25 @@ export class TriggerService {
         }
     }
 
-    private startPriceTrigger(workflowId: string, metaData: PriceTriggerData) {
+    private startPriceTrigger(workflowId: string, metaData: any) {
         const key = `${workflowId}-price-${metaData.symbol}`;
         const interval = setInterval(async () => {
             try {
-                const currentPrice = await this.fetchPrice(metaData.symbol);
+                const symbol = metaData.asset ?? metaData.symbol;
+                const currentPrice = await this.fetchPrice(symbol);
+                const targetPrice = metaData.price;
+                const condition = metaData.condition ?? 'above';
                 const shouldTrigger =
-                    (metaData.condition === "above" && currentPrice > metaData.price) ||
-                    (metaData.condition === "below" && currentPrice < metaData.price);
+                    (condition === "above" && currentPrice >= targetPrice) ||
+                    (condition === "below" && currentPrice <= targetPrice);
 
                 if (shouldTrigger) {
                     await this.executor.executeWorkflowById(workflowId, {
                         trigger: 'price',
-                        symbol: metaData.symbol,
+                        symbol,
                         currentPrice,
-                        targetPrice: metaData.price,
-                        condition: metaData.condition,
+                        targetPrice,
+                        condition,
                     });
                 }
             } catch (e) {
@@ -75,9 +78,9 @@ export class TriggerService {
         this.intervals.set(key, interval);
     }
 
-    private startTimerTrigger(workflowId: string, metaData: TimerTriggerData) {
+    private startTimerTrigger(workflowId: string, metaData: any) {
         const key = `${workflowId}-timer`;
-        const intervalMs = this.parseScheduleToMs(metaData.schedule);
+        const intervalMs = typeof metaData.time === 'number' ? metaData.time * 1000 : this.parseScheduleToMs(metaData.schedule);
 
         const interval = setInterval(async () => {
             try {
@@ -112,7 +115,7 @@ export class TriggerService {
     }
 
     private async fetchPrice(symbol: string): Promise<number> {
-        return 50 * Math.random() * 100;
+        return 50 + Math.random() * 100;
     }
 
     private parseScheduleToMs(schedule: string): number {
