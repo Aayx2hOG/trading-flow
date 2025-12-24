@@ -51,7 +51,8 @@ export class TriggerService {
     }
 
     private startPriceTrigger(workflowId: string, metaData: any) {
-        const key = `${workflowId}-price-${metaData.symbol}`;
+        const symbol = metaData?.asset ?? metaData?.symbol ?? 'UNKNOWN';
+        const key = `${workflowId}-price-${symbol}`;
         const interval = setInterval(async () => {
             try {
                 const symbol = metaData.asset ?? metaData.symbol;
@@ -119,22 +120,30 @@ export class TriggerService {
     }
 
     private parseScheduleToMs(schedule: string): number {
-        const match = schedule.match(/^every (\d+) (seconds|minutes|hours)$/);
-        if (!match) {
-            throw new Error(`Invalid schedule format: ${schedule}`);
+        if (!schedule || typeof schedule !== 'string') {
+            console.warn('No schedule provided, defaulting to 60s');
+            return 60_000;
         }
-        const value = parseInt(match[1]!);
-        const unit = match[2]!;
+        const s = schedule.trim().toLowerCase();
+        const short = s.match(/^(\d+)([smh])$/);
+        if (short) {
+            const val = parseInt(short[1]!, 10);
+            const unit = short[2]!;
+            if (unit === 's') return val * 1000;
+            if (unit === 'm') return val * 60 * 1000;
+            if (unit === 'h') return val * 60 * 60 * 1000;
+        }
 
-        switch (unit) {
-            case 'seconds':
-                return value * 1000;
-            case 'minutes':
-                return value * 60 * 1000;
-            case 'hours':
-                return value * 60 * 60 * 1000;
-            default:
-                throw new Error(`Unsupported time unit: ${unit}`);
+        const verbose = s.match(/^every\s+(\d+)\s+(seconds|minutes|hours)$/);
+        if (verbose) {
+            const val = parseInt(verbose[1]!, 10);
+            const unit = verbose[2]!;
+            if (unit === 'seconds') return val * 1000;
+            if (unit === 'minutes') return val * 60 * 1000;
+            if (unit === 'hours') return val * 60 * 60 * 1000;
         }
+
+        console.warn(`Invalid schedule format: ${schedule}, defaulting to 60s`);
+        return 60_000;
     }
 }
