@@ -6,9 +6,17 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { CreateWorkflowSchema, SignInSchema, SignUpSchema } from 'common/types';
 import { authMiddleware } from './middleware';
+import { WorkflowExecutor } from './services/workflow.service';
+import { TriggerService } from './services/trigger.service';
 
 const app = express();
 const JWT_SECRET = process.env.JWT_SECRET || '';
+const workflowExecutor = new WorkflowExecutor();
+const triggerService = new TriggerService();
+
+triggerService.startAllTriggers().catch(err => {
+    console.error('Error starting triggers:', err);
+});
 
 app.use(cors());
 app.use(express.json());
@@ -141,6 +149,79 @@ app.get('/workflow/executions/:workflowId', authMiddleware, async (req: Request,
     }
 
     res.json(workflow.executions);
+});
+
+app.post('/workflow/:workflowId/execute', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const { workflowId } = req.params;
+        const workflow = await prismaClient.workflow.findUnique({
+            where: { id: workflowId },
+        });
+        if (!workflow || workflow.userId !== req.userId) {
+            return res.status(404).json({ error: 'Workflow not found' });
+        }
+
+        const executionId = await workflowExecutor.executeWorkflowById(
+            workflowId!,
+            req.body.triggerData
+        );
+
+        res.json({ executionId, status: 'success' });
+    } catch (e) {
+        res.status(500).json({ error: 'Workflow execution failed' });
+    }
+});
+
+app.post('/workflow/:workflowId/enable', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const { workflowId } = req.params;
+        const worklow = await prismaClient.workflow.findUnique({
+            where: { id: workflowId },
+        });
+        if (!worklow || worklow.userId !== req.userId) {
+            return res.status(404).json({ error: 'Workflow not found' });
+        }
+        await triggerService.startWorkflowTrigger(workflowId!);
+        res.json({ status: 'Workflow enabled' });
+    } catch (e) {
+        res.status(500).json({ error: 'Enabling workflow failed' });
+    }
+});
+
+app.post('/workflow/:workflowId/disable', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const { workflowId } = req.params;
+        const workflow = await prismaClient.workflow.findUnique({
+            where: { id: workflowId },
+        });
+        if (!workflow || workflow.userId !== req.userId) {
+            return res.status(404).json({ error: 'Workflow not found' });
+        }
+        triggerService.stopWorkflowTriggers(workflowId!);
+        res.json({ status: 'Workflow disabled' });
+    } catch (e) {
+        res.status(500).json({ error: 'Disabling workflow failed' });
+    }
+});
+
+app.get('/execution/:executionId', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const execution = await prismaClient.execution.findUnique({
+            where: { id: req.params.executionId },
+            include: { workflow: true }
+        });
+        if (!execution || execution.workflow.userId !== req.userId) {
+            return res.status(404).json({ error: 'Execution not found' });
+        }
+        res.json(execution);
+    } catch (e) {
+        res.status(500).json({ error: 'Fetching execution failed' });
+    }
+});
+
+process.on('SIGTERM', () => {
+    triggerService.stopAllTriggers();
+    process.exit(0);
 });
 
 app.listen(process.env.PORT || 3000); 
