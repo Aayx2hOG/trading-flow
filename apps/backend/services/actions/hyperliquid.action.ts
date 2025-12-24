@@ -7,7 +7,7 @@ export class HyperliquidAction implements IAction {
     async execute(credentials: ActionCredentials, metadata: ActionMetadata, inputData?: any): Promise<ActionResult> {
         for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
             try {
-                return await this.execute(credentials, metadata, inputData);
+                return await this.executeInternal(credentials, metadata, inputData);
             } catch (e) {
                 if (attempt === this.maxRetries - 1) {
                     return {
