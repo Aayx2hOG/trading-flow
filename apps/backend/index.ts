@@ -8,11 +8,13 @@ import { CreateWorkflowSchema, SignInSchema, SignUpSchema } from 'common/types';
 import { authMiddleware } from './middleware';
 import { WorkflowExecutor } from './services/workflow.service';
 import { TriggerService } from './services/trigger.service';
+import { CredentialsService } from './services/credentials.service';
 
 const app = express();
 const JWT_SECRET = process.env.JWT_SECRET || '';
 const workflowExecutor = new WorkflowExecutor();
 const triggerService = new TriggerService();
+const credentialsService = new CredentialsService();
 
 triggerService.startAllTriggers().catch(err => {
     console.error('Error starting triggers:', err);
@@ -216,6 +218,52 @@ app.get('/execution/:executionId', authMiddleware, async (req: Request, res: Res
         res.json(execution);
     } catch (e) {
         res.status(500).json({ error: 'Fetching execution failed' });
+    }
+});
+
+app.post('/credentials', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const { name, type, data } = req.body;
+        if (!name || !type || !data) {
+            return res.status(400).json({ error: 'Missing required fields' });
+        }
+        const credentials = await credentialsService.create(req.userId!, name, type, data);
+        res.status(201).json({ credentials });
+    } catch (e) {
+        res.status(500).json({ error: 'Creating credentials failed' });
+    }
+});
+
+app.get('/credentials', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const list = await credentialsService.list(req.userId!);
+        res.json(list);
+    } catch (e) {
+        res.status(500).json({ error: 'Fetching credentials failed' });
+    }
+});
+
+app.get('/credentials/:id', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const cred = await credentialsService.getDecrypted(req.userId!, req.params.id!);
+        if (!cred) {
+            return res.status(404).json({ error: 'Credentials not found' });
+        }
+        res.json(cred);
+    } catch (e) {
+        res.status(500).json({ error: 'Fetching credentials failed' });
+    }
+});
+
+app.delete('/credentials/:id', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const result = await credentialsService.remove(req.userId!, req.params.id!);
+        if (!result) {
+            return res.status(404).json({ error: 'Credentials not found' });
+        }
+        res.json({ deleted: true });
+    } catch (e) {
+        res.status(500).json({ error: 'Deleting credentials failed' });
     }
 });
 
