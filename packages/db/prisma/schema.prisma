@@ -8,11 +8,12 @@ datasource db {
 }
 
 model User {
-  id        String     @id @default(cuid())
-  email     String     @unique
-  username  String     @unique
-  password  String
-  workflows Workflow[]
+  id          String       @id @default(cuid())
+  email       String       @unique
+  username    String       @unique
+  password    String
+  workflows   Workflow[]
+  credentials Credential[]
 }
 
 model Workflow {
@@ -41,4 +42,17 @@ model Execution {
 
   @@index([workflowId])
   @@index([status])
+}
+
+model Credential {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  name          String
+  type          String
+  encryptedData String
+  iv            String
+  authTag       String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
