@@ -23,6 +23,7 @@ model Workflow {
   nodes      Json        @default("[]")
   edges      Json        @default("[]")
   executions Execution[]
+  webhookUrl String?     @unique
 
   @@index([userId])
 }

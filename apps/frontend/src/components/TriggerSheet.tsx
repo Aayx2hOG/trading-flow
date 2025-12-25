@@ -28,6 +28,11 @@ const SUPPORTED_TRIGGERS = [{
     id: 'price-trigger',
     title: 'Price Trigger',
     description: 'Runs whenever the price goes above or below a certain number for an asset'
+},
+{
+    id: 'webhook-trigger',
+    title: 'Webhook Trigger',
+    description: 'Trigger workflow via an HTTP request'
 }]
 export const SUPPORTED_ASSETS = ['SOL', 'BTC', 'ETH'];
 

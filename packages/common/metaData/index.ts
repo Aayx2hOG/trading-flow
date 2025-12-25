@@ -11,3 +11,7 @@ export type PriceTriggerMetaData = {
     asset: string,
     price: number,
 };
+export type WebhookTriggerMetaData = {
+    method: 'GET' | 'POST' | 'PUT' | 'DELETE',
+    endpoint: string,
+}

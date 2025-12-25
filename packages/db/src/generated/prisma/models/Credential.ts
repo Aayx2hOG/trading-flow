@@ -447,10 +447,6 @@ export type CredentialUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.CredentialScalarWhereInput | Prisma.CredentialScalarWhereInput[]
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type CredentialCreateWithoutUserInput = {
   id?: string
   name: string

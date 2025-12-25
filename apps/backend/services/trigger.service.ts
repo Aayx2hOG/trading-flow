@@ -11,6 +11,11 @@ interface TimerTriggerData {
     schedule: string;
 }
 
+interface WebhookTriggerData {
+    method?: string,
+    path?: string
+}
+
 export class TriggerService {
     private executor: WorkflowExecutor;
     private intervals: Map<string, NodeJS.Timeout>;
@@ -46,6 +51,8 @@ export class TriggerService {
                 this.startPriceTrigger(workflowId, trigger.data.metaData);
             } else if (trigger.type === "timer-trigger") {
                 this.startTimerTrigger(workflowId, trigger.data.metaData);
+            } else if (trigger.type === "webhook-trigger") {
+                this.startWebhookTrigger(workflowId, trigger.data.metaData);
             }
         }
     }
@@ -97,6 +104,7 @@ export class TriggerService {
         this.intervals.set(key, interval);
     }
 
+
     stopWorkflowTriggers(workflowId: string) {
         let count = 0;
         for (const [key, interval] of this.intervals.entries()) {
@@ -145,5 +153,23 @@ export class TriggerService {
 
         console.warn(`Invalid schedule format: ${schedule}, defaulting to 60s`);
         return 60_000;
+    }
+
+    private async startWebhookTrigger(workflowId: string, metaData: WebhookTriggerData) {
+        const workflow = await prismaClient.workflow.findUnique({
+            where: { id: workflowId },
+            select: { webhookUrl: true }
+        });
+        if (!workflow?.webhookUrl) {
+            const webhookId = crypto.randomUUID();
+            await prismaClient.workflow.update({
+                where: { id: workflowId },
+                data: {
+                    webhookUrl: webhookId
+                },
+            });
+        } else {
+            console.log(`Webhook already exists for workflow ${workflowId}: /webhook/${workflow.webhookUrl}`);
+        }
     }
 }

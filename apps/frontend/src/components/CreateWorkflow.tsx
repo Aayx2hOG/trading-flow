@@ -8,10 +8,12 @@ import { ActionSheet } from './ActionSheet';
 import { Backpack } from '@/nodes/actions/Backpack';
 import { Hyperliquid } from '@/nodes/actions/Hyperliquid';
 import type { PriceTriggerMetaData, TimerNodeMetaData, TradingMetadata } from 'common/types';
+import { WebhookTrigger } from '@/nodes/triggers/WebhookTrigger';
 
 const nodeTypes = {
     'price-trigger': PriceTrigger,
     'timer-trigger': TimerTrigger,
+    'webhook-trigger': WebhookTrigger,
     'lighter': Lighter,
     'backpack': Backpack,
     'hyperliquid': Hyperliquid

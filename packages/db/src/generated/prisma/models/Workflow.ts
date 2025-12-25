@@ -27,11 +27,13 @@ export type AggregateWorkflow = {
 export type WorkflowMinAggregateOutputType = {
   id: string | null
   userId: string | null
+  webhookUrl: string | null
 }
 
 export type WorkflowMaxAggregateOutputType = {
   id: string | null
   userId: string | null
+  webhookUrl: string | null
 }
 
 export type WorkflowCountAggregateOutputType = {
@@ -39,6 +41,7 @@ export type WorkflowCountAggregateOutputType = {
   userId: number
   nodes: number
   edges: number
+  webhookUrl: number
   _all: number
 }
 
@@ -46,11 +49,13 @@ export type WorkflowCountAggregateOutputType = {
 export type WorkflowMinAggregateInputType = {
   id?: true
   userId?: true
+  webhookUrl?: true
 }
 
 export type WorkflowMaxAggregateInputType = {
   id?: true
   userId?: true
+  webhookUrl?: true
 }
 
 export type WorkflowCountAggregateInputType = {
@@ -58,6 +63,7 @@ export type WorkflowCountAggregateInputType = {
   userId?: true
   nodes?: true
   edges?: true
+  webhookUrl?: true
   _all?: true
 }
 
@@ -138,6 +144,7 @@ export type WorkflowGroupByOutputType = {
   userId: string
   nodes: runtime.JsonValue
   edges: runtime.JsonValue
+  webhookUrl: string | null
   _count: WorkflowCountAggregateOutputType | null
   _min: WorkflowMinAggregateOutputType | null
   _max: WorkflowMaxAggregateOutputType | null
@@ -166,6 +173,7 @@ export type WorkflowWhereInput = {
   userId?: Prisma.StringFilter<"Workflow"> | string
   nodes?: Prisma.JsonFilter<"Workflow">
   edges?: Prisma.JsonFilter<"Workflow">
+  webhookUrl?: Prisma.StringNullableFilter<"Workflow"> | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   executions?: Prisma.ExecutionListRelationFilter
 }
@@ -175,12 +183,14 @@ export type WorkflowOrderByWithRelationInput = {
   userId?: Prisma.SortOrder
   nodes?: Prisma.SortOrder
   edges?: Prisma.SortOrder
+  webhookUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   executions?: Prisma.ExecutionOrderByRelationAggregateInput
 }
 
 export type WorkflowWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  webhookUrl?: string
   AND?: Prisma.WorkflowWhereInput | Prisma.WorkflowWhereInput[]
   OR?: Prisma.WorkflowWhereInput[]
   NOT?: Prisma.WorkflowWhereInput | Prisma.WorkflowWhereInput[]
@@ -189,13 +199,14 @@ export type WorkflowWhereUniqueInput = Prisma.AtLeast<{
   edges?: Prisma.JsonFilter<"Workflow">
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   executions?: Prisma.ExecutionListRelationFilter
-}, "id">
+}, "id" | "webhookUrl">
 
 export type WorkflowOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   nodes?: Prisma.SortOrder
   edges?: Prisma.SortOrder
+  webhookUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.WorkflowCountOrderByAggregateInput
   _max?: Prisma.WorkflowMaxOrderByAggregateInput
   _min?: Prisma.WorkflowMinOrderByAggregateInput
@@ -209,12 +220,14 @@ export type WorkflowScalarWhereWithAggregatesInput = {
   userId?: Prisma.StringWithAggregatesFilter<"Workflow"> | string
   nodes?: Prisma.JsonWithAggregatesFilter<"Workflow">
   edges?: Prisma.JsonWithAggregatesFilter<"Workflow">
+  webhookUrl?: Prisma.StringNullableWithAggregatesFilter<"Workflow"> | string | null
 }
 
 export type WorkflowCreateInput = {
   id?: string
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  webhookUrl?: string | null
   user: Prisma.UserCreateNestedOneWithoutWorkflowsInput
   executions?: Prisma.ExecutionCreateNestedManyWithoutWorkflowInput
 }
@@ -224,6 +237,7 @@ export type WorkflowUncheckedCreateInput = {
   userId: string
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  webhookUrl?: string | null
   executions?: Prisma.ExecutionUncheckedCreateNestedManyWithoutWorkflowInput
 }
 
@@ -231,6 +245,7 @@ export type WorkflowUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  webhookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutWorkflowsNestedInput
   executions?: Prisma.ExecutionUpdateManyWithoutWorkflowNestedInput
 }
@@ -240,6 +255,7 @@ export type WorkflowUncheckedUpdateInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  webhookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   executions?: Prisma.ExecutionUncheckedUpdateManyWithoutWorkflowNestedInput
 }
 
@@ -248,12 +264,14 @@ export type WorkflowCreateManyInput = {
   userId: string
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  webhookUrl?: string | null
 }
 
 export type WorkflowUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  webhookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type WorkflowUncheckedUpdateManyInput = {
@@ -261,6 +279,7 @@ export type WorkflowUncheckedUpdateManyInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  webhookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type WorkflowListRelationFilter = {
@@ -278,16 +297,19 @@ export type WorkflowCountOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   nodes?: Prisma.SortOrder
   edges?: Prisma.SortOrder
+  webhookUrl?: Prisma.SortOrder
 }
 
 export type WorkflowMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  webhookUrl?: Prisma.SortOrder
 }
 
 export type WorkflowMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  webhookUrl?: Prisma.SortOrder
 }
 
 export type WorkflowScalarRelationFilter = {
@@ -337,6 +359,10 @@ export type WorkflowUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.WorkflowScalarWhereInput | Prisma.WorkflowScalarWhereInput[]
 }
 
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
+}
+
 export type WorkflowCreateNestedOneWithoutExecutionsInput = {
   create?: Prisma.XOR<Prisma.WorkflowCreateWithoutExecutionsInput, Prisma.WorkflowUncheckedCreateWithoutExecutionsInput>
   connectOrCreate?: Prisma.WorkflowCreateOrConnectWithoutExecutionsInput
@@ -355,6 +381,7 @@ export type WorkflowCreateWithoutUserInput = {
   id?: string
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  webhookUrl?: string | null
   executions?: Prisma.ExecutionCreateNestedManyWithoutWorkflowInput
 }
 
@@ -362,6 +389,7 @@ export type WorkflowUncheckedCreateWithoutUserInput = {
   id?: string
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  webhookUrl?: string | null
   executions?: Prisma.ExecutionUncheckedCreateNestedManyWithoutWorkflowInput
 }
 
@@ -399,12 +427,14 @@ export type WorkflowScalarWhereInput = {
   userId?: Prisma.StringFilter<"Workflow"> | string
   nodes?: Prisma.JsonFilter<"Workflow">
   edges?: Prisma.JsonFilter<"Workflow">
+  webhookUrl?: Prisma.StringNullableFilter<"Workflow"> | string | null
 }
 
 export type WorkflowCreateWithoutExecutionsInput = {
   id?: string
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  webhookUrl?: string | null
   user: Prisma.UserCreateNestedOneWithoutWorkflowsInput
 }
 
@@ -413,6 +443,7 @@ export type WorkflowUncheckedCreateWithoutExecutionsInput = {
   userId: string
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  webhookUrl?: string | null
 }
 
 export type WorkflowCreateOrConnectWithoutExecutionsInput = {
@@ -435,6 +466,7 @@ export type WorkflowUpdateWithoutExecutionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  webhookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutWorkflowsNestedInput
 }
 
@@ -443,18 +475,21 @@ export type WorkflowUncheckedUpdateWithoutExecutionsInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  webhookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type WorkflowCreateManyUserInput = {
   id?: string
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  webhookUrl?: string | null
 }
 
 export type WorkflowUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  webhookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   executions?: Prisma.ExecutionUpdateManyWithoutWorkflowNestedInput
 }
 
@@ -462,6 +497,7 @@ export type WorkflowUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  webhookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   executions?: Prisma.ExecutionUncheckedUpdateManyWithoutWorkflowNestedInput
 }
 
@@ -469,6 +505,7 @@ export type WorkflowUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  webhookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -507,6 +544,7 @@ export type WorkflowSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   userId?: boolean
   nodes?: boolean
   edges?: boolean
+  webhookUrl?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   executions?: boolean | Prisma.Workflow$executionsArgs<ExtArgs>
   _count?: boolean | Prisma.WorkflowCountOutputTypeDefaultArgs<ExtArgs>
@@ -517,6 +555,7 @@ export type WorkflowSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   userId?: boolean
   nodes?: boolean
   edges?: boolean
+  webhookUrl?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["workflow"]>
 
@@ -525,6 +564,7 @@ export type WorkflowSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   userId?: boolean
   nodes?: boolean
   edges?: boolean
+  webhookUrl?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["workflow"]>
 
@@ -533,9 +573,10 @@ export type WorkflowSelectScalar = {
   userId?: boolean
   nodes?: boolean
   edges?: boolean
+  webhookUrl?: boolean
 }
 
-export type WorkflowOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "nodes" | "edges", ExtArgs["result"]["workflow"]>
+export type WorkflowOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "nodes" | "edges" | "webhookUrl", ExtArgs["result"]["workflow"]>
 export type WorkflowInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   executions?: boolean | Prisma.Workflow$executionsArgs<ExtArgs>
@@ -559,6 +600,7 @@ export type $WorkflowPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     userId: string
     nodes: runtime.JsonValue
     edges: runtime.JsonValue
+    webhookUrl: string | null
   }, ExtArgs["result"]["workflow"]>
   composites: {}
 }
@@ -988,6 +1030,7 @@ export interface WorkflowFieldRefs {
   readonly userId: Prisma.FieldRef<"Workflow", 'String'>
   readonly nodes: Prisma.FieldRef<"Workflow", 'Json'>
   readonly edges: Prisma.FieldRef<"Workflow", 'Json'>
+  readonly webhookUrl: Prisma.FieldRef<"Workflow", 'String'>
 }
     
 

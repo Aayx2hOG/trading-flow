@@ -756,7 +756,8 @@ export const WorkflowScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   nodes: 'nodes',
-  edges: 'edges'
+  edges: 'edges',
+  webhookUrl: 'webhookUrl'
 } as const
 
 export type WorkflowScalarFieldEnum = (typeof WorkflowScalarFieldEnum)[keyof typeof WorkflowScalarFieldEnum]
