@@ -4,6 +4,7 @@ import { BackpackAction } from "./actions/backpack.action";
 import { HttpAction } from "./actions/http.action";
 import { HyperliquidAction } from "./actions/hyperliquid.action";
 import { LighterAction } from "./actions/lighter.action";
+import { CredentialsService } from "./credentials.service";
 
 interface Node {
     id: string,
@@ -23,12 +24,14 @@ interface Edge {
 }
 
 interface Workflow {
+    userId?: string,
     nodes: Node[],
     edges: Edge[],
 }
 
 export class WorkflowExecutor {
     private actions: Map<string, IAction> = new Map();
+    private credentials = new CredentialsService();
 
     constructor() {
         this.actions.set('http', new HttpAction());
@@ -56,6 +59,7 @@ export class WorkflowExecutor {
 
         try {
             const workflowData: Workflow = {
+                userId: workflow.userId,
                 nodes: workflow.nodes as unknown as Node[],
                 edges: workflow.edges as unknown as Edge[],
             }
@@ -119,10 +123,17 @@ export class WorkflowExecutor {
                     const previousNodes = workflow.edges
                         .filter(edge => edge.target === node.id)
                         .map(edge => edge.source);
+
                     const inputData = previousNodes.length > 0 ? nodeResults.get(previousNodes[0]!) : undefined;
 
-                    const result = await action?.execute(
-                        node.credentials || {},
+                    let creds = node.credentials || {};
+                    if (creds && typeof creds === 'object' && 'refId' in creds) {
+                        const resolved = await this.credentials.getDecrypted(workflow.userId!, creds.refId as string);
+                        if (resolved?.data) creds = resolved.data;
+                    }
+
+                    const result = await action!.execute(
+                        creds,
                         node.data.metaData || {},
                         inputData
                     );
