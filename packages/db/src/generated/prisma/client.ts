@@ -54,3 +54,8 @@ export type Workflow = Prisma.WorkflowModel
  * 
  */
 export type Execution = Prisma.ExecutionModel
+/**
+ * Model Credential
+ * 
+ */
+export type Credential = Prisma.CredentialModel
