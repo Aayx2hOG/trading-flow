@@ -109,6 +109,19 @@ app.put('/workflow/:workflowId', authMiddleware, async (req: Request, res: Respo
     }
 
     try {
+
+        const existingWorkflow = await prismaClient.workflow.findUnique({
+            where: { id: req.params.workflowId }
+        });
+        if (!existingWorkflow) {
+            return res.status(404).json({ error: 'Workflow not found' });
+        }
+        if (existingWorkflow.userId !== req.userId) {
+            return res.status(403).json({ error: 'Forbidden' });
+        }
+
+        triggerService.stopWorkflowTriggers(req.params.workflowId!);
+
         const workflow = await prismaClient.workflow.update({
             where: { id: req.params.workflowId },
             data: {
@@ -116,10 +129,38 @@ app.put('/workflow/:workflowId', authMiddleware, async (req: Request, res: Respo
                 edges: data.edges
             }
         });
-        res.status(200).json({ workflowId: workflow.id });
+        const nodes = data.nodes as any[];
+        const hasTriggers = nodes.some(n => n.type.endsWith('trigger'));
+        if (hasTriggers) {
+            await triggerService.startWorkflowTrigger(workflow.id);
+        }
+        res.status(200).json({ workflowId: workflow.id, message: 'Workflow updated successfully' });
     } catch (error) {
         console.error('Workflow update error:', error);
         res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.delete('/workflow/:workflowId', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const workflow = await prismaClient.workflow.findUnique({
+            where: { id: req.params.workflowId }
+        });
+        if (!workflow) {
+            return res.status(404).json({ error: 'Workflow not found' });
+        }
+        if (workflow.userId !== req.userId) {
+            return res.status(403).json({ error: 'Forbidden' });
+        }
+
+        triggerService.stopWorkflowTriggers(req.params.workflowId!);
+
+        await prismaClient.workflow.delete({
+            where: { id: req.params.workflowId }
+        });
+        res.json({ success: true, message: 'Workflow deleted successfully' });
+    } catch (e) {
+        res.status(500).json({ error: 'Deleting workflow failed' });
     }
 });
 
@@ -320,14 +361,39 @@ app.get('/workflow/:workflowId/webhook', authMiddleware, async (req: Request, re
     }
 });
 
-app.get('/webhook/:webhookId', async (req: Request, res: Response) => {
-    req.method = 'GET';
-    return app._router.handle(req, res);
-});
-
-app.put('/webhook/:webhookId', async (req: Request, res: Response) => {
-    req.method = 'PUT';
-    return app._router.handle(req, res);
+app.all('/webhook/:webhookId/*', async (req: Request, res: Response) => {
+    try {
+        const { webhookId } = req.params;
+        const workflow = await prismaClient.workflow.findUnique({
+            where: { webhookUrl: webhookId },
+        });
+        if (!workflow) {
+            return res.status(404).json({ error: 'Workflow not found for this webhook' });
+        }
+        const nodes = workflow.nodes as any[];
+        const webhookTrigger = nodes.find(n => n.type === 'webhook-trigger' && n.data.kind === 'trigger');
+        if (webhookTrigger?.data?.metaData?.method) {
+            const allowedMethod = webhookTrigger.data.metaData.method;
+            if (req.method !== allowedMethod) {
+                return res.status(405).json({ error: `Invalid HTTP method. Expected ${allowedMethod}` });
+            }
+        }
+        const executionId = await workflowExecutor.executeWorkflowById(
+            workflow.id,
+            {
+                trigger: 'webhook',
+                method: req.method,
+                body: req.body,
+                headers: req.headers,
+                query: req.query,
+                params: req.params,
+                timestamp: new Date().toISOString(),
+            }
+        );
+        res.json({ executionId, status: 'success' });
+    } catch (e) {
+        res.status(500).json({ error: 'Webhook execution failed' });
+    }
 });
 
 process.on('SIGTERM', () => {
