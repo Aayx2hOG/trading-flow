@@ -1,15 +1,24 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import CreateWorkflow from "./components/CreateWorkflow";
-import '@xyflow/react/dist/style.css';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import CreateWorkflow from './components/CreateWorkflow';
+import { WorkflowList } from './components/WorkflowList';
+import Signin from './pages/Signin';
+import Signup from './pages/Signup';
 
-export default function App() {
+function App() {
   return (
-    <div>
+    <div style={{ width: '100vw', height: '100vh' }}>
       <BrowserRouter>
         <Routes>
-          <Route path="/create-workflow" element={<CreateWorkflow />} />
+          <Route path="/signin" element={<Signin />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/" element={<Navigate to="/signin" replace />} />
+          <Route path="/workflows" element={<WorkflowList />} />
+          <Route path="/workflow/new" element={<CreateWorkflow />} />
+          <Route path="/workflow/:workflowId" element={<CreateWorkflow />} />
         </Routes>
       </BrowserRouter>
     </div>
-  )
+  );
 }
+
+export default App;
