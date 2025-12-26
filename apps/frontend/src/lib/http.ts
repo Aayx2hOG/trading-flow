@@ -1,6 +1,6 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
 
-export class HttpClient {
+class HttpClient {
     private getAuthHeader(): Record<string, string> {
         const token = localStorage.getItem('authtoken');
         return token ? { 'Authorization': `Bearer ${token}` } : {};
@@ -46,3 +46,5 @@ export class HttpClient {
         return this.request<T>(endpoint, { method: 'DELETE' });
     }
 }
+
+export const http = new HttpClient();
