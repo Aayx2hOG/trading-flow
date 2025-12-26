@@ -23,9 +23,18 @@ class HttpClient {
             headers,
         });
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            // Try to surface server-provided error messages
+            let message = `HTTP ${response.status}`;
+            try {
+                const data = await response.json();
+                if (data?.error) message = data.error;
+                if (data?.message) message = data.message;
+            } catch { }
+            throw new Error(message);
         }
-        return response.json();
+        // Handle empty responses
+        const text = await response.text();
+        return text ? JSON.parse(text) : (undefined as unknown as T);
     }
     get<T>(endpoint: string) {
         return this.request<T>(endpoint, { method: 'GET' });

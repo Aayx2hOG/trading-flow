@@ -102,6 +102,7 @@ export default function CreateWorkflow() {
     const [isExecuting, setIsExecuting] = useState(false);
     const [isEnabling, setIsEnabling] = useState(false);
     const [isDisabling, setIsDisabling] = useState(false);
+    const [isEnabled, setIsEnabled] = useState(false);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const [webhookUrl, setWebhookUrl] = useState<string | null>(null);
     const [webhookCopied, setWebhookCopied] = useState(false);
@@ -129,6 +130,7 @@ export default function CreateWorkflow() {
                 try {
                     const webhook = await workflowApi.getWebhook(workflowId);
                     setWebhookUrl(webhook.webhookUrl);
+                    setIsEnabled(true);
                 } catch (err) {
                     console.log('No webhook configured');
                 }
@@ -222,6 +224,7 @@ export default function CreateWorkflow() {
             await workflowApi.enable(workflowId);
 
             alert('Workflow enabled successfully');
+            setIsEnabled(true);
 
             const hasWebhookTrigger = nodes.some((n) => n.type === 'webhook-trigger');
             if (hasWebhookTrigger) {
@@ -248,6 +251,7 @@ export default function CreateWorkflow() {
         try {
             await workflowApi.disable(workflowId);
             alert('Workflow disabled successfully');
+            setIsEnabled(false);
         } catch (err) {
             alert('Failed to disable workflow: ' + (err instanceof Error ? err.message : 'Unknown error occurred'));
         } finally {
@@ -375,6 +379,12 @@ export default function CreateWorkflow() {
 
                     {/* Right side - Actions */}
                     <div className="flex items-center gap-2">
+                        {isEditMode && (
+                            <Badge variant="outline" className={isEnabled ? 'gap-1.5 bg-emerald-50 text-emerald-700 border-emerald-200' : 'gap-1.5 bg-gray-100 text-gray-600 border-gray-200'}>
+                                <AlertCircle className="w-3 h-3" />
+                                {isEnabled ? 'Enabled' : 'Disabled'}
+                            </Badge>
+                        )}
                         {hasUnsavedChanges && (
                             <Badge variant="outline" className="gap-1.5 bg-orange-50 text-orange-700 border-orange-200">
                                 <AlertCircle className="w-3 h-3" />
@@ -413,35 +423,37 @@ export default function CreateWorkflow() {
                                     Run
                                 </Button>
 
-                                <Button
-                                    onClick={handleEnable}
-                                    disabled={isEnabling}
-                                    size="sm"
-                                    variant="outline"
-                                    className="gap-2"
-                                >
-                                    {isEnabling ? (
-                                        <Loader2 className="w-4 h-4 animate-spin" />
-                                    ) : (
-                                        <Power className="w-4 h-4" />
-                                    )}
-                                    Enable
-                                </Button>
-
-                                <Button
-                                    onClick={handleDisable}
-                                    disabled={isDisabling}
-                                    size="sm"
-                                    variant="outline"
-                                    className="gap-2"
-                                >
-                                    {isDisabling ? (
-                                        <Loader2 className="w-4 h-4 animate-spin" />
-                                    ) : (
-                                        <PowerOff className="w-4 h-4" />
-                                    )}
-                                    Disable
-                                </Button>
+                                {!isEnabled ? (
+                                    <Button
+                                        onClick={handleEnable}
+                                        disabled={isEnabling}
+                                        size="sm"
+                                        variant="outline"
+                                        className="gap-2"
+                                    >
+                                        {isEnabling ? (
+                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                        ) : (
+                                            <Power className="w-4 h-4" />
+                                        )}
+                                        Enable
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        onClick={handleDisable}
+                                        disabled={isDisabling}
+                                        size="sm"
+                                        variant="outline"
+                                        className="gap-2"
+                                    >
+                                        {isDisabling ? (
+                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                        ) : (
+                                            <PowerOff className="w-4 h-4" />
+                                        )}
+                                        Disable
+                                    </Button>
+                                )}
 
                                 <Button
                                     onClick={handleDelete}
