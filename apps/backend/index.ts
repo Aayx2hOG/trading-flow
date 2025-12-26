@@ -361,7 +361,7 @@ app.get('/workflow/:workflowId/webhook', authMiddleware, async (req: Request, re
     }
 });
 
-app.all('/webhook/:webhookId/*', async (req: Request, res: Response) => {
+app.all('/webhook/:webhookId', async (req: Request, res: Response) => {
     try {
         const { webhookId } = req.params;
         const workflow = await prismaClient.workflow.findUnique({
