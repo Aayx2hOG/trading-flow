@@ -12,6 +12,8 @@ export const SignInSchema = z.object({
 });
 
 export const CreateWorkflowSchema = z.object({
+    name: z.string().min(3, 'Workflow name must be at least 3 characters long'),
+    description: z.string().optional(),
     nodes: z.array(z.object({
         type: z.string(),
         data: z.object({
@@ -33,18 +35,20 @@ export const CreateWorkflowSchema = z.object({
 });
 
 export const updateWorkflowSchema = z.object({
+    name: z.string().min(3, 'Workflow name must be at least 3 characters long').optional(),
+    description: z.string().optional(),
     nodes: z.array(z.object({
         nodeId: z.string(),
         data: z.object({
             kind: z.enum(['action', 'trigger']),
             metaData: z.any()
-        }),
+        }).optional(),
         id: z.string(),
         credentials: z.any(),
         position: z.object({
             x: z.number(),
             y: z.number()
-        }),
+        }).optional(),
     })),
     edges: z.array(z.object({
         id: z.string(),
@@ -70,3 +74,57 @@ export interface ActionMetadata {
 export interface IAction {
     execute(credentials: ActionCredentials, metadata: ActionMetadata, inputData?: any): Promise<ActionResult>;
 }
+
+export interface WorkflowExecution {
+    id: string;
+    workflowId: string;
+    status: 'success' | 'failure' | 'running' | 'cancelled';
+    startedAt: string;
+    finishedAt?: string;
+    duration?: number;
+    triggeredBy: 'manual' | 'schedule' | 'webhook' | 'price-trigger' | 'timer-trigger';
+    error?: {
+        message: string;
+        step?: string;
+        code?: string
+    };
+    executionLogs: ExecutionLog[];
+    metaData?: Record<string, any>;
+}
+
+export interface ExecutionLog {
+    id: string;
+    timestamp: string;
+    nodeId: string;
+    nodeName: string;
+    level: 'info' | 'warning' | 'error' | 'debug';
+    message: string;
+    data?: Record<string, any>;
+}
+export interface WorkflowStats {
+    totalExecutions: number;
+    successCount: number;
+    failureCount: number;
+    successRate: number;
+    averageDuration: number;
+    lastExecutedAt?: string;
+}
+
+export interface Workflow {
+    id: string;
+    name: string;
+    description?: string;
+    userId: string;
+    nodes: any[];
+    edges: any[];
+    isEnabled: boolean;
+    webhookUrl?: string;
+    createdAt: string;
+    updatedAt: string;
+    stats?: WorkflowStats;
+}
+
+export type CreateWorkflowInput = z.infer<typeof CreateWorkflowSchema>;
+export type UpdateWorkflowInput = z.infer<typeof updateWorkflowSchema>;
+export type SignUpInput = z.infer<typeof SignUpSchema>;
+export type SignInInput = z.infer<typeof SignInSchema>;
