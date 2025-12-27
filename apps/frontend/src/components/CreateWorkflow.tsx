@@ -1,4 +1,3 @@
-// src/components/CreateWorkflow.tsx
 import { useState, useCallback, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
@@ -15,45 +14,46 @@ import {
     type Connection,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+
 import { TriggerSheet } from './TriggerSheet';
 import { ActionSheet } from './ActionSheet';
+
 import { PriceTrigger } from '@/nodes/triggers/PriceTrigger';
 import { TimerTrigger } from '@/nodes/triggers/TimerTrigger';
 import { WebhookTrigger } from '@/nodes/triggers/WebhookTrigger';
+
 import { Lighter } from '@/nodes/actions/Lighter';
 import { Backpack } from '@/nodes/actions/Backpack';
 import { Hyperliquid } from '@/nodes/actions/Hyperliquid';
+
 import { workflowApi } from '@/api/workflow.api';
 import type { PriceTriggerMetaData, TimerNodeMetaData, TradingMetadata } from 'common/types';
+
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
+
 import {
     Save,
     Trash2,
-    Play,
     Power,
     PowerOff,
-    AlertCircle,
     ArrowLeft,
     Copy,
     Check,
     Loader2,
     Link as LinkIcon,
     Info,
-    CheckCircle2,
-    XCircle,
 } from 'lucide-react';
 
 const nodeTypes = {
     'price-trigger': PriceTrigger,
     'timer-trigger': TimerTrigger,
     'webhook-trigger': WebhookTrigger,
-    'lighter': Lighter,
-    'backpack': Backpack,
-    'hyperliquid': Hyperliquid,
+    lighter: Lighter,
+    backpack: Backpack,
+    hyperliquid: Hyperliquid,
 };
 
 export type NodeKind =
@@ -64,16 +64,19 @@ export type NodeKind =
     | 'backpack'
     | 'lighter';
 
-export type NodeMetaData = TradingMetadata | PriceTriggerMetaData | TimerNodeMetaData;
+export type NodeMetaData =
+    | TradingMetadata
+    | PriceTriggerMetaData
+    | TimerNodeMetaData;
 
 interface NodeType {
+    id: string;
     type: NodeKind;
+    position: { x: number; y: number };
     data: {
-        kind: 'action' | 'trigger';
+        kind: 'trigger' | 'action';
         metaData: NodeMetaData;
     };
-    id: string;
-    position: { x: number; y: number };
 }
 
 interface Edge {
@@ -87,380 +90,254 @@ export default function CreateWorkflow() {
     const navigate = useNavigate();
     const isEditMode = !!workflowId;
 
-    // Workflow state
     const [nodes, setNodes] = useState<NodeType[]>([]);
     const [edges, setEdges] = useState<Edge[]>([]);
-    const [selectAction, setSelectAction] = useState<{
-        position: { x: number; y: number };
-        startingNodeId: string;
-    } | null>(null);
+    const [selectAction, setSelectAction] = useState<any>(null);
 
-    // UI state
     const [isSaving, setIsSaving] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isExecuting, setIsExecuting] = useState(false);
     const [isEnabling, setIsEnabling] = useState(false);
     const [isDisabling, setIsDisabling] = useState(false);
+
     const [isEnabled, setIsEnabled] = useState(false);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
     const [webhookUrl, setWebhookUrl] = useState<string | null>(null);
     const [webhookCopied, setWebhookCopied] = useState(false);
 
-    // Load workflow if editing
     useEffect(() => {
-        if (workflowId) {
-            loadWorkflow();
-        }
+        if (workflowId) loadWorkflow();
     }, [workflowId]);
 
+    // Add global styles for ReactFlow
+    useEffect(() => {
+        const style = document.createElement('style');
+        style.textContent = `
+            .react-flow__attribution {
+                display: none !important;
+            }
+            .react-flow__controls,
+            .react-flow__minimap {
+                z-index: 10 !important;
+            }
+            .react-flow__minimap {
+                background-color: #111827 !important;
+                border: 1px solid #374151 !important;
+            }
+            .react-flow__minimap-mask {
+                fill: rgba(0, 0, 0, 0.7) !important;
+            }
+            .react-flow__controls {
+                background-color: #111827 !important;
+                border: 1px solid #374151 !important;
+            }
+            .react-flow__controls button {
+                background-color: #1f2937 !important;
+                border-bottom: 1px solid #374151 !important;
+                color: #d1d5db !important;
+            }
+            .react-flow__controls button:hover {
+                background-color: #374151 !important;
+            }
+            .react-flow__controls button svg {
+                fill: #d1d5db !important;
+            }
+            .react-flow__edge-path {
+                stroke: #9ca3af !important;
+                stroke-width: 2 !important;
+            }
+            .react-flow__node {
+                border-radius: 8px;
+            }
+        `;
+        document.head.appendChild(style);
+        return () => {
+            document.head.removeChild(style);
+        };
+    }, []);
+
     const loadWorkflow = async () => {
-        if (!workflowId) return;
-
         setIsLoading(true);
-
         try {
-            const workflow = await workflowApi.getById(workflowId);
+            const workflow = await workflowApi.getById(workflowId!);
             setNodes(workflow.nodes || []);
             setEdges(workflow.edges || []);
             setHasUnsavedChanges(false);
 
-            // Load webhook URL if exists
             if (workflow.webhookUrl) {
-                try {
-                    const webhook = await workflowApi.getWebhook(workflowId);
-                    setWebhookUrl(webhook.webhookUrl);
-                    setIsEnabled(true);
-                } catch (err) {
-                    console.log('No webhook configured');
-                }
+                const webhook = await workflowApi.getWebhook(workflowId!);
+                setWebhookUrl(webhook.webhookUrl);
+                setIsEnabled(true);
             }
-
-            console.log('Workflow loaded successfully');
-        } catch (err) {
-            alert('Failed to load workflow: ' + (err instanceof Error ? err.message : 'Unknown error occurred'));
-            console.error('Load workflow error:', err);
+        } catch (error) {
+            console.error('Error loading workflow:', error);
         } finally {
             setIsLoading(false);
         }
     };
 
-    // Save workflow
     const handleSave = async () => {
         if (!nodes.length) {
-            alert('Cannot save empty workflow. Add at least one node to save the workflow');
+            console.warn('No nodes to save');
             return;
         }
 
         setIsSaving(true);
         try {
-            if (isEditMode && workflowId) {
-                await workflowApi.update(workflowId, { nodes, edges });
-                setHasUnsavedChanges(false);
-                alert('Workflow saved successfully');
+            if (isEditMode) {
+                await workflowApi.update(workflowId!, { nodes, edges });
             } else {
-                const result = await workflowApi.create({ nodes, edges });
-                setHasUnsavedChanges(false);
-                navigate(`/workflow/${result.workflowId}`, { replace: true });
-                alert('Workflow created successfully');
+                const res = await workflowApi.create({ nodes, edges });
+                navigate(`/workflow/${res.workflowId}`, { replace: true });
             }
-        } catch (err) {
-            alert('Failed to save workflow: ' + (err instanceof Error ? err.message : 'Unknown error'));
+            setHasUnsavedChanges(false);
+        } catch (error) {
+            console.error('Error saving workflow:', error);
         } finally {
             setIsSaving(false);
         }
     };
 
-    // Delete workflow
     const handleDelete = async () => {
-        if (!workflowId) return;
-
-        if (!window.confirm('Are you sure you want to delete this workflow? This action cannot be undone.')) {
-            return;
-        }
-
+        if (!confirm('Delete workflow permanently?')) return;
         setIsDeleting(true);
-
         try {
-            await workflowApi.delete(workflowId);
+            await workflowApi.delete(workflowId!);
             navigate('/workflows');
-            alert('Workflow deleted successfully');
-        } catch (err) {
-            alert('Failed to delete workflow: ' + (err instanceof Error ? err.message : 'Unknown error'));
-        } finally {
+        } catch (error) {
+            console.error('Error deleting workflow:', error);
             setIsDeleting(false);
         }
     };
 
-    // Execute workflow
-    const handleExecute = async () => {
-        if (!workflowId) {
-            alert('Cannot execute. Please save the workflow first');
-            return;
-        }
-
-        setIsExecuting(true);
-
-        try {
-            const result = await workflowApi.execute(workflowId);
-            alert(`Workflow executed! ID: ${result.executionId.slice(0, 8)}...`);
-        } catch (err) {
-            alert('Failed to execute workflow: ' + (err instanceof Error ? err.message : 'Unknown error'));
-        } finally {
-            setIsExecuting(false);
-        }
-    };
-
-    // Enable workflow
     const handleEnable = async () => {
-        if (!workflowId) {
-            alert('Cannot enable. Please save the workflow first');
-            return;
-        }
-
         setIsEnabling(true);
-
         try {
-            await workflowApi.enable(workflowId);
-
-            alert('Workflow enabled successfully');
+            await workflowApi.enable(workflowId!);
             setIsEnabled(true);
-
-            const hasWebhookTrigger = nodes.some((n) => n.type === 'webhook-trigger');
-            if (hasWebhookTrigger) {
-                try {
-                    const webhook = await workflowApi.getWebhook(workflowId);
-                    setWebhookUrl(webhook.webhookUrl);
-                } catch (err) {
-                    console.log('No webhook URL available');
-                }
-            }
-        } catch (err) {
-            alert('Failed to enable workflow: ' + (err instanceof Error ? err.message : 'Unknown error occurred'));
+        } catch (error) {
+            console.error('Error enabling workflow:', error);
         } finally {
             setIsEnabling(false);
         }
     };
 
-    // Disable workflow
     const handleDisable = async () => {
-        if (!workflowId) return;
-
         setIsDisabling(true);
-
         try {
-            await workflowApi.disable(workflowId);
-            alert('Workflow disabled successfully');
+            await workflowApi.disable(workflowId!);
             setIsEnabled(false);
-        } catch (err) {
-            alert('Failed to disable workflow: ' + (err instanceof Error ? err.message : 'Unknown error occurred'));
+        } catch (error) {
+            console.error('Error disabling workflow:', error);
         } finally {
             setIsDisabling(false);
         }
     };
 
-    // Copy webhook URL
-    const handleCopyWebhook = async () => {
-        if (!webhookUrl) return;
-
-        try {
-            await navigator.clipboard.writeText(webhookUrl);
+    const handleCopyWebhook = () => {
+        if (webhookUrl) {
+            navigator.clipboard.writeText(webhookUrl);
             setWebhookCopied(true);
             setTimeout(() => setWebhookCopied(false), 2000);
-            console.log('Webhook URL copied to clipboard');
-        } catch (err) {
-            alert('Failed to copy webhook URL');
         }
     };
 
     const onNodesChange = useCallback((changes: NodeChange[]) => {
-        setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot) as NodeType[]);
+        setNodes((nds) => applyNodeChanges(changes, nds) as NodeType[]);
         setHasUnsavedChanges(true);
     }, []);
 
     const onEdgesChange = useCallback((changes: EdgeChange[]) => {
-        setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot));
+        setEdges((eds) => applyEdgeChanges(changes, eds));
         setHasUnsavedChanges(true);
     }, []);
 
     const onConnect = useCallback((params: Connection) => {
-        setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot));
+        setEdges((eds) => addEdge(params, eds));
         setHasUnsavedChanges(true);
     }, []);
 
-    const POSITION_OFFSET = 200;
-    const onConnectEnd = useCallback(
-        (_params: any, connectionInfo: any) => {
-            if (!connectionInfo.isValid) {
-                setSelectAction({
-                    startingNodeId: connectionInfo.fromNode.id,
-                    position: {
-                        x: connectionInfo.fromNode.position.x + POSITION_OFFSET,
-                        y: connectionInfo.fromNode.position.y,
-                    },
-                });
-            }
-        },
-        []
-    );
-
-    // Warn before leaving with unsaved changes
-    useEffect(() => {
-        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-            if (hasUnsavedChanges) {
-                e.preventDefault();
-                e.returnValue = '';
-            }
-        };
-
-        window.addEventListener('beforeunload', handleBeforeUnload);
-        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-    }, [hasUnsavedChanges]);
-
-    // Auto-save
-    useEffect(() => {
-        if (!hasUnsavedChanges || !workflowId || !nodes.length) return;
-
-        const autoSaveTimer = setTimeout(() => {
-            handleSave();
-        }, 10000);
-
-        return () => clearTimeout(autoSaveTimer);
-    }, [hasUnsavedChanges, nodes, edges, workflowId]);
-
     if (isLoading) {
         return (
-            <div className="w-screen h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-                <Card className="p-8">
-                    <div className="text-center">
-                        <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
-                        <p className="text-gray-600 text-lg font-medium">Loading workflow...</p>
-                    </div>
-                </Card>
+            <div className="w-screen h-screen flex items-center justify-center bg-black">
+                <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
             </div>
         );
     }
 
     return (
-        <div className="w-screen h-screen flex flex-col bg-gradient-to-br from-gray-50 to-gray-100">
-            {/* Top Toolbar */}
-            <div className="bg-white border-b shadow-sm px-4 py-3 z-10">
-                <div className="flex items-center justify-between">
-                    {/* Left side */}
-                    <div className="flex items-center gap-4">
+        <div className="w-screen h-screen flex flex-col bg-black text-gray-100">
+            {/* Top Bar */}
+            <div className="bg-black border-b border-gray-800 px-4 py-3">
+                <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-3">
                         <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => {
-                                if (hasUnsavedChanges) {
-                                    if (
-                                        confirm('You have unsaved changes. Are you sure you want to leave?')
-                                    ) {
-                                        navigate('/workflows');
-                                    }
-                                } else {
-                                    navigate('/workflows');
-                                }
-                            }}
+                            className="text-gray-400 hover:bg-gray-900 hover:text-gray-100"
+                            onClick={() => navigate('/')}
                         >
-                            <ArrowLeft className="w-4 h-4 mr-2" />
-                            Back
+                            Home
                         </Button>
-                        <Separator orientation="vertical" className="h-6" />
-                        <div>
-                            <h1 className="text-lg font-semibold text-gray-900">
-                                {isEditMode ? 'Edit Workflow' : 'Create Workflow'}
-                            </h1>
-                            <p className="text-xs text-muted-foreground">
-                                {nodes.length} nodes • {edges.length} connections
-                            </p>
-                        </div>
+
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-gray-400 hover:bg-gray-900 hover:text-gray-100"
+                            onClick={() => navigate('/workflows')}
+                        >
+                            <ArrowLeft className="w-4 h-4 mr-1" /> Back
+                        </Button>
+
+                        <Separator orientation="vertical" className="h-6 bg-gray-800" />
+                        <h1 className="font-semibold text-gray-100">
+                            {isEditMode ? 'Edit Workflow' : 'Create Workflow'}
+                        </h1>
                     </div>
 
-                    {/* Right side - Actions */}
                     <div className="flex items-center gap-2">
-                        {isEditMode && (
-                            <Badge variant="outline" className={isEnabled ? 'gap-1.5 bg-emerald-50 text-emerald-700 border-emerald-200' : 'gap-1.5 bg-gray-100 text-gray-600 border-gray-200'}>
-                                <AlertCircle className="w-3 h-3" />
-                                {isEnabled ? 'Enabled' : 'Disabled'}
-                            </Badge>
-                        )}
                         {hasUnsavedChanges && (
-                            <Badge variant="outline" className="gap-1.5 bg-orange-50 text-orange-700 border-orange-200">
-                                <AlertCircle className="w-3 h-3" />
-                                Unsaved changes
+                            <Badge className="bg-orange-900/30 text-orange-400 border-orange-700">
+                                Unsaved
                             </Badge>
                         )}
 
                         <Button
                             onClick={handleSave}
-                            disabled={isSaving || (!hasUnsavedChanges && isEditMode) || !nodes.length}
-                            size="sm"
-                            className="gap-2"
+                            disabled={isSaving}
+                            className="bg-blue-600 hover:bg-blue-700 text-white"
                         >
                             {isSaving ? (
                                 <Loader2 className="w-4 h-4 animate-spin" />
                             ) : (
                                 <Save className="w-4 h-4" />
                             )}
-                            {isSaving ? 'Saving...' : isEditMode ? 'Save' : 'Create'}
                         </Button>
 
                         {isEditMode && (
                             <>
                                 <Button
-                                    onClick={handleExecute}
-                                    disabled={isExecuting}
-                                    size="sm"
                                     variant="outline"
-                                    className="gap-2"
+                                    className="border-gray-700 hover:bg-gray-900 bg-black text-gray-300"
+                                    onClick={isEnabled ? handleDisable : handleEnable}
+                                    disabled={isEnabling || isDisabling}
                                 >
-                                    {isExecuting ? (
+                                    {isEnabling || isDisabling ? (
                                         <Loader2 className="w-4 h-4 animate-spin" />
+                                    ) : isEnabled ? (
+                                        <PowerOff className="w-4 h-4" />
                                     ) : (
-                                        <Play className="w-4 h-4" />
+                                        <Power className="w-4 h-4" />
                                     )}
-                                    Run
                                 </Button>
 
-                                {!isEnabled ? (
-                                    <Button
-                                        onClick={handleEnable}
-                                        disabled={isEnabling}
-                                        size="sm"
-                                        variant="outline"
-                                        className="gap-2"
-                                    >
-                                        {isEnabling ? (
-                                            <Loader2 className="w-4 h-4 animate-spin" />
-                                        ) : (
-                                            <Power className="w-4 h-4" />
-                                        )}
-                                        Enable
-                                    </Button>
-                                ) : (
-                                    <Button
-                                        onClick={handleDisable}
-                                        disabled={isDisabling}
-                                        size="sm"
-                                        variant="outline"
-                                        className="gap-2"
-                                    >
-                                        {isDisabling ? (
-                                            <Loader2 className="w-4 h-4 animate-spin" />
-                                        ) : (
-                                            <PowerOff className="w-4 h-4" />
-                                        )}
-                                        Disable
-                                    </Button>
-                                )}
-
                                 <Button
+                                    variant="destructive"
+                                    className="bg-red-600 hover:bg-red-700"
                                     onClick={handleDelete}
                                     disabled={isDeleting}
-                                    size="sm"
-                                    variant="destructive"
-                                    className="gap-2"
                                 >
                                     {isDeleting ? (
                                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -472,131 +349,128 @@ export default function CreateWorkflow() {
                         )}
                     </div>
                 </div>
+
+                {/* Webhook URL */}
+                {webhookUrl && (
+                    <div className="mt-3 flex items-center gap-2 bg-gray-900 px-3 py-2 rounded border border-gray-700">
+                        <LinkIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                        <code className="text-xs text-gray-300 flex-1 overflow-hidden text-ellipsis">
+                            {webhookUrl}
+                        </code>
+                        <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={handleCopyWebhook}
+                            className="h-7 px-2 hover:bg-gray-800 text-gray-300"
+                        >
+                            {webhookCopied ? (
+                                <Check className="w-3 h-3 text-green-400" />
+                            ) : (
+                                <Copy className="w-3 h-3" />
+                            )}
+                        </Button>
+                    </div>
+                )}
             </div>
 
-            {/* Webhook URL Card */}
-            {webhookUrl && (
-                <div className="px-4 pt-4">
-                    <Alert className="border-blue-200 bg-blue-50">
-                        <LinkIcon className="h-4 w-4 text-blue-600" />
-                        <AlertDescription className="flex items-center justify-between">
-                            <div className="flex-1">
-                                <p className="text-sm font-semibold text-blue-900 mb-1">Webhook URL</p>
-                                <code className="text-xs text-blue-700 bg-blue-100 px-2 py-1 rounded block break-all">
-                                    {webhookUrl}
-                                </code>
-                            </div>
-                            <Button
-                                onClick={handleCopyWebhook}
-                                size="sm"
-                                variant="outline"
-                                className="ml-4 gap-2 shrink-0"
-                            >
-                                {webhookCopied ? (
-                                    <>
-                                        <Check className="w-4 h-4" />
-                                        Copied
-                                    </>
-                                ) : (
-                                    <>
-                                        <Copy className="w-4 h-4" />
-                                        Copy
-                                    </>
-                                )}
-                            </Button>
-                        </AlertDescription>
-                    </Alert>
-                </div>
+            {!nodes.length && !isEditMode && (
+                <TriggerSheet
+                    onClose={() => { }}
+                    onSelect={(type, metaData) => {
+                        setNodes([{
+                            id: Math.random().toString(),
+                            type,
+                            data: {
+                                kind: 'trigger',
+                                metaData,
+                            },
+                            position: { x: 250, y: 200 }
+                        }]);
+                        setHasUnsavedChanges(true);
+                    }}
+                />
             )}
 
-            {/* React Flow Canvas */}
-            <div className="flex-1 relative">
-                {!nodes.length && !isEditMode && (
-                    <TriggerSheet
-                        onClose={() => { }}
-                        onSelect={(type, metaData) => {
-                            setNodes([
-                                {
-                                    id: Math.random().toString(),
-                                    type,
-                                    data: {
-                                        kind: 'trigger',
-                                        metaData,
-                                    },
-                                    position: { x: 250, y: 150 },
-                                },
-                            ]);
-                            setHasUnsavedChanges(true);
-                        }}
-                    />
-                )}
+            {selectAction && (
+                <ActionSheet
+                    onSelect={(type, metaData) => {
+                        const nodeId = Math.random().toString();
+                        setNodes([...nodes, {
+                            id: nodeId,
+                            type,
+                            data: {
+                                kind: 'action',
+                                metaData,
+                            },
+                            position: selectAction.position
+                        }]);
+                        setEdges([...edges, {
+                            id: Math.random().toString(),
+                            source: selectAction.startingNodeId,
+                            target: nodeId,
+                        }]);
+                        setSelectAction(null);
+                        setHasUnsavedChanges(true);
+                    }}
+                    onClose={() => setSelectAction(null)}
+                />
+            )}
 
-                {selectAction && (
-                    <ActionSheet
-                        onSelect={(type, metaData) => {
-                            const nodeId = Math.random().toString();
-                            setNodes([
-                                ...nodes,
-                                {
-                                    id: nodeId,
-                                    type,
-                                    data: {
-                                        kind: 'action',
-                                        metaData,
-                                    },
-                                    position: selectAction.position,
-                                },
-                            ]);
-                            setEdges([
-                                ...edges,
-                                {
-                                    id: `${selectAction.startingNodeId}-${nodeId}`,
-                                    source: selectAction.startingNodeId,
-                                    target: nodeId,
-                                },
-                            ]);
-                            setSelectAction(null);
-                            setHasUnsavedChanges(true);
-                        }}
-                        onClose={() => setSelectAction(null)}
-                    />
-                )}
-
+            {/* Canvas */}
+            <div className="flex-1">
                 <ReactFlow
-                    nodeTypes={nodeTypes}
                     nodes={nodes}
                     edges={edges}
+                    nodeTypes={nodeTypes}
                     onNodesChange={onNodesChange}
                     onEdgesChange={onEdgesChange}
                     onConnect={onConnect}
-                    onConnectEnd={onConnectEnd}
+                    onConnectEnd={(event, connectionInfo: any) => {
+                        if (!connectionInfo.isValid) {
+                            const sourceNode = nodes.find(n => n.id === connectionInfo.fromNode?.id);
+                            if (sourceNode) {
+                                setSelectAction({
+                                    startingNodeId: connectionInfo.fromNode.id,
+                                    position: {
+                                        x: connectionInfo.fromNode.position.x + 300,
+                                        y: connectionInfo.fromNode.position.y
+                                    }
+                                });
+                            }
+                        }
+                    }}
                     fitView
-                    className="bg-gray-50"
+                    className="bg-black"
+                    defaultEdgeOptions={{
+                        style: {
+                            stroke: '#9ca3af',
+                            strokeWidth: 2
+                        },
+                        animated: true,
+                    }}
                 >
-                    <Background color="#e5e7eb" gap={16} size={1} />
+                    <Background
+                        color="#374151"
+                        gap={20}
+                        size={1}
+                    />
                     <Controls />
                     <MiniMap
-                        nodeColor={(node) => {
-                            if (node.data.kind === 'trigger') return '#3b82f6';
-                            if (node.data.kind === 'action') return '#10b981';
-                            return '#6b7280';
+                        nodeColor={(n) => {
+                            if (!n.data) return '#6b7280';
+                            return n.data.kind === 'trigger' ? '#3b82f6' : '#10b981';
                         }}
-                        className="border-2 border-gray-200 rounded-lg shadow-lg"
+                        maskColor="rgba(0, 0, 0, 0.7)"
+                        nodeBorderRadius={8}
+                        pannable
+                        zoomable
                     />
 
-                    <Panel position="top-left" className="m-4">
-                        <Card className="p-4 shadow-lg">
-                            <div className="space-y-2">
-                                <div className="flex items-center gap-2 mb-3">
-                                    <Info className="w-4 h-4 text-blue-600" />
-                                    <h3 className="font-semibold text-sm">Quick Tips</h3>
-                                </div>
-                                <div className="text-xs text-muted-foreground space-y-1.5">
-                                    <p>• Drag from nodes to connect them</p>
-                                    <p>• Select and press Delete to remove</p>
-                                    <p>• Drag canvas to pan around</p>
-                                    <p>• Scroll to zoom in/out</p>
-                                </div>
+                    <Panel position="top-left">
+                        <Card className="bg-gray-900/90 border border-gray-700 p-3 shadow-lg backdrop-blur-sm">
+                            <div className="flex items-center gap-2 text-sm text-gray-300">
+                                <Info className="w-4 h-4 text-blue-400" />
+                                Drag to connect nodes
                             </div>
                         </Card>
                     </Panel>
