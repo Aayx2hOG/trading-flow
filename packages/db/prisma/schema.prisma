@@ -17,13 +17,17 @@ model User {
 }
 
 model Workflow {
-  id         String      @id @default(cuid())
-  user       User        @relation(fields: [userId], references: [id])
-  userId     String
-  nodes      Json        @default("[]")
-  edges      Json        @default("[]")
-  executions Execution[]
-  webhookUrl String?     @unique
+  id          String      @id @default(cuid())
+  user        User        @relation(fields: [userId], references: [id])
+  userId      String
+  name        String      @default("untitled workflow")
+  description String?
+  nodes       Json        @default("[]")
+  edges       Json        @default("[]")
+  executions  Execution[]
+  webhookUrl  String?     @unique
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
   @@index([userId])
 }
