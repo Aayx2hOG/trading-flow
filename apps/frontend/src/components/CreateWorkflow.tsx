@@ -45,6 +45,7 @@ import {
     Loader2,
     Link as LinkIcon,
     Info,
+    Clock,
 } from 'lucide-react';
 
 const nodeTypes = {
@@ -97,7 +98,8 @@ export default function CreateWorkflow() {
     const [isSaving, setIsSaving] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
-    const [isExecuting, setIsExecuting] = useState(false);
+    const [workflowName, setWorkflowName] = useState('untitled workflow');
+    const [workflowDescription, setWorkflowDescription] = useState('');
     const [isEnabling, setIsEnabling] = useState(false);
     const [isDisabling, setIsDisabling] = useState(false);
 
@@ -162,9 +164,11 @@ export default function CreateWorkflow() {
         setIsLoading(true);
         try {
             const workflow = await workflowApi.getById(workflowId!);
-            setNodes(workflow.nodes || []);
+            setNodes((workflow.nodes as NodeType[]) || []);
             setEdges(workflow.edges || []);
             setHasUnsavedChanges(false);
+            setWorkflowName(workflow.name || "untitled workflow");
+            setWorkflowDescription(workflow.description || "");
 
             if (workflow.webhookUrl) {
                 const webhook = await workflowApi.getWebhook(workflowId!);
@@ -187,9 +191,9 @@ export default function CreateWorkflow() {
         setIsSaving(true);
         try {
             if (isEditMode) {
-                await workflowApi.update(workflowId!, { nodes, edges });
+                await workflowApi.update(workflowId!, { nodes, edges, name: workflowName, description: workflowDescription });
             } else {
-                const res = await workflowApi.create({ nodes, edges });
+                const res = await workflowApi.create({ nodes, edges, name: workflowName, description: workflowDescription });
                 navigate(`/workflow/${res.workflowId}`, { replace: true });
             }
             setHasUnsavedChanges(false);
@@ -268,110 +272,149 @@ export default function CreateWorkflow() {
     }
 
     return (
-        <div className="w-screen h-screen flex flex-col bg-black text-gray-100">
-            {/* Top Bar */}
-            <div className="bg-black border-b border-gray-800 px-4 py-3">
-                <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-3">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-gray-400 hover:bg-gray-900 hover:text-gray-100"
-                            onClick={() => navigate('/')}
-                        >
-                            Home
-                        </Button>
+        <div className="w-screen h-screen flex flex-col bg-background text-foreground overflow-hidden">
+            {/* Glossy Top Bar */}
+            <header className="sticky top-0 z-50 glass border-b border-white/5 px-6 py-4">
+                <div className="flex justify-between items-center max-w-[2000px] mx-auto">
+                    <div className="flex items-center gap-6">
+                        <div className="flex items-center gap-2">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-9 w-9 p-0 hover:bg-white/5 rounded-xl transition-all"
+                                onClick={() => navigate('/workflows')}
+                            >
+                                <ArrowLeft className="w-5 h-5 text-muted-foreground hover:text-foreground" />
+                            </Button>
+                            <Separator orientation="vertical" className="h-6 bg-white/10" />
+                        </div>
 
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-gray-400 hover:bg-gray-900 hover:text-gray-100"
-                            onClick={() => navigate('/workflows')}
-                        >
-                            <ArrowLeft className="w-4 h-4 mr-1" /> Back
-                        </Button>
-
-                        <Separator orientation="vertical" className="h-6 bg-gray-800" />
-                        <h1 className="font-semibold text-gray-100">
-                            {isEditMode ? 'Edit Workflow' : 'Create Workflow'}
-                        </h1>
+                        <div className="flex flex-col min-w-[250px]">
+                            <input
+                                type="text"
+                                value={workflowName}
+                                onChange={(e) => {
+                                    setWorkflowName(e.target.value);
+                                    setHasUnsavedChanges(true);
+                                }}
+                                className="bg-transparent border-none text-foreground font-bold text-lg focus:outline-none focus:ring-0 p-0 placeholder:text-muted-foreground/50"
+                                placeholder="Untitled Workflow"
+                            />
+                            <input
+                                type="text"
+                                value={workflowDescription}
+                                onChange={(e) => {
+                                    setWorkflowDescription(e.target.value);
+                                    setHasUnsavedChanges(true);
+                                }}
+                                className="bg-transparent border-none text-muted-foreground text-xs focus:outline-none focus:ring-0 p-0 font-medium placeholder:text-muted-foreground/30"
+                                placeholder="Add a description for this automation..."
+                            />
+                        </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
                         {hasUnsavedChanges && (
-                            <Badge className="bg-orange-900/30 text-orange-400 border-orange-700">
-                                Unsaved
+                            <Badge className="bg-orange-500/10 text-orange-400 border-none px-3 py-1 animate-pulse font-bold text-[10px] uppercase tracking-wider">
+                                Unsaved Changes
                             </Badge>
                         )}
 
-                        <Button
-                            onClick={handleSave}
-                            disabled={isSaving}
-                            className="bg-blue-600 hover:bg-blue-700 text-white"
-                        >
-                            {isSaving ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                                <Save className="w-4 h-4" />
+                        <div className="flex items-center bg-white/5 rounded-2xl p-1 border border-white/5">
+                            <Button
+                                onClick={handleSave}
+                                disabled={isSaving}
+                                className="h-9 px-4 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl shadow-[0_0_15px_-3px_rgba(59,130,246,0.4)] transition-all"
+                            >
+                                {isSaving ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                    <div className="flex items-center gap-2">
+                                        <Save className="w-4 h-4" />
+                                        <span>Save</span>
+                                    </div>
+                                )}
+                            </Button>
+
+                            {isEditMode && (
+                                <div className="flex items-center">
+                                    <Separator orientation="vertical" className="h-5 mx-1 bg-white/10" />
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-9 px-3 text-muted-foreground hover:text-foreground gap-2 font-medium"
+                                        onClick={() => navigate(`/workflow/${workflowId}/execution`)}
+                                    >
+                                        <Clock className="w-4 h-4" />
+                                        <span>History</span>
+                                    </Button>
+                                    
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className={`h-9 px-3 gap-2 font-medium transition-colors ${isEnabled ? 'text-green-500 hover:text-green-400' : 'text-muted-foreground hover:text-foreground'}`}
+                                        onClick={isEnabled ? handleDisable : handleEnable}
+                                        disabled={isEnabling || isDisabling}
+                                    >
+                                        {isEnabling || isDisabling ? (
+                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                        ) : isEnabled ? (
+                                            <><Power className="w-4 h-4" /> Running</>
+                                        ) : (
+                                            <><PowerOff className="w-4 h-4" /> Stopped</>
+                                        )}
+                                    </Button>
+
+                                    <Separator orientation="vertical" className="h-5 mx-1 bg-white/10" />
+                                    
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-9 w-9 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-xl transition-all"
+                                        onClick={handleDelete}
+                                        disabled={isDeleting}
+                                    >
+                                        {isDeleting ? (
+                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                        ) : (
+                                            <Trash2 className="w-4 h-4" />
+                                        )}
+                                    </Button>
+                                </div>
                             )}
-                        </Button>
-
-                        {isEditMode && (
-                            <>
-                                <Button
-                                    variant="outline"
-                                    className="border-gray-700 hover:bg-gray-900 bg-black text-gray-300"
-                                    onClick={isEnabled ? handleDisable : handleEnable}
-                                    disabled={isEnabling || isDisabling}
-                                >
-                                    {isEnabling || isDisabling ? (
-                                        <Loader2 className="w-4 h-4 animate-spin" />
-                                    ) : isEnabled ? (
-                                        <PowerOff className="w-4 h-4" />
-                                    ) : (
-                                        <Power className="w-4 h-4" />
-                                    )}
-                                </Button>
-
-                                <Button
-                                    variant="destructive"
-                                    className="bg-red-600 hover:bg-red-700"
-                                    onClick={handleDelete}
-                                    disabled={isDeleting}
-                                >
-                                    {isDeleting ? (
-                                        <Loader2 className="w-4 h-4 animate-spin" />
-                                    ) : (
-                                        <Trash2 className="w-4 h-4" />
-                                    )}
-                                </Button>
-                            </>
-                        )}
+                        </div>
                     </div>
                 </div>
 
-                {/* Webhook URL */}
+                {/* Webhook URL Tray */}
                 {webhookUrl && (
-                    <div className="mt-3 flex items-center gap-2 bg-gray-900 px-3 py-2 rounded border border-gray-700">
-                        <LinkIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                        <code className="text-xs text-gray-300 flex-1 overflow-hidden text-ellipsis">
-                            {webhookUrl}
-                        </code>
-                        <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={handleCopyWebhook}
-                            className="h-7 px-2 hover:bg-gray-800 text-gray-300"
-                        >
-                            {webhookCopied ? (
-                                <Check className="w-3 h-3 text-green-400" />
-                            ) : (
-                                <Copy className="w-3 h-3" />
-                            )}
-                        </Button>
+                    <div className="max-w-[2000px] mx-auto mt-4 px-2">
+                        <div className="flex items-center gap-3 bg-blue-500/5 px-4 py-2.5 rounded-xl border border-blue-500/10 animate-in fade-in slide-in-from-top-2">
+                            <div className="p-1.5 bg-blue-500/20 rounded-lg">
+                                <LinkIcon className="w-4 h-4 text-blue-400" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-[10px] uppercase tracking-widest font-bold text-blue-400 mb-0.5">Webhook Endpoint</p>
+                                <code className="text-sm text-gray-300 block truncate font-mono">
+                                    {webhookUrl}
+                                </code>
+                            </div>
+                            <Button
+                                size="sm"
+                                variant="secondary"
+                                onClick={handleCopyWebhook}
+                                className="h-9 px-4 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 text-gray-300 gap-2 transition-all"
+                            >
+                                {webhookCopied ? (
+                                    <><Check className="w-4 h-4 text-green-400" /> Copied</>
+                                ) : (
+                                    <><Copy className="w-4 h-4" /> Copy URL</>
+                                )}
+                            </Button>
+                        </div>
                     </div>
                 )}
-            </div>
+            </header>
 
             {!nodes.length && !isEditMode && (
                 <TriggerSheet

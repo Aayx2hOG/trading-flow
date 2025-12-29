@@ -91,6 +91,8 @@ app.post('/workflow', authMiddleware, async (req: Request, res: Response) => {
                 user: {
                     connect: { id: userId }
                 },
+                name: data.name,
+                description: data.description,
                 nodes: data.nodes,
                 edges: data.edges
             }
@@ -125,6 +127,8 @@ app.put('/workflow/:workflowId', authMiddleware, async (req: Request, res: Respo
         const workflow = await prismaClient.workflow.update({
             where: { id: req.params.workflowId },
             data: {
+                name: data.name,
+                description: data.description,
                 nodes: data.nodes,
                 edges: data.edges
             }

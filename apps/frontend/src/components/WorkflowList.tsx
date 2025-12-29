@@ -2,10 +2,9 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { workflowApi, type Workflow } from '@/api/workflow.api';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Separator } from '@/components/ui/separator';
 import {
     Plus,
     Trash2,
@@ -86,53 +85,69 @@ export function WorkflowList() {
     }
 
     return (
-        <div className="min-h-screen bg-black text-gray-100">
-            <div className="container mx-auto p-6 max-w-7xl">
+        <div className="min-h-screen bg-background text-foreground bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900/10 via-background to-background">
+            <div className="container mx-auto p-8 max-w-7xl">
                 {/* Header */}
-                <div className="flex justify-between items-center mb-8">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
                     <div>
-                        <h1 className="text-4xl font-bold text-gray-100 mb-2 flex items-center gap-3">
-                            <WorkflowIcon className="w-10 h-10 text-blue-500" />
-                            My Workflows
-                        </h1>
-                        <p className="text-gray-400">
-                            {workflows.length} {workflows.length === 1 ? 'workflow' : 'workflows'}
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="p-2 bg-blue-500/10 rounded-xl border border-blue-500/20 shadow-[0_0_15px_-3px_rgba(59,130,246,0.5)]">
+                                <WorkflowIcon className="w-8 h-8 text-blue-500" />
+                            </div>
+                            <h1 className="text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-500">
+                                Dashboard
+                            </h1>
+                        </div>
+                        <p className="text-muted-foreground font-medium ml-13">
+                            Manage your automated trading workflows and monitoring tasks.
                         </p>
                     </div>
                     <Button
                         onClick={() => navigate('/workflow/new')}
                         size="lg"
-                        className="gap-2 bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
+                        className="h-12 px-6 gap-2 bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_0_20px_-5px_rgba(59,130,246,0.5)] hover:shadow-[0_0_25px_-3px_rgba(59,130,246,0.6)] transition-all duration-300 rounded-xl font-bold"
                     >
                         <Plus className="w-5 h-5" />
-                        New Workflow
+                        New Automation
                     </Button>
+                </div>
+
+                {/* Status Bar */}
+                <div className="flex items-center gap-4 mb-8 text-sm">
+                    <Badge variant="outline" className="px-3 py-1 border-border bg-card/50 text-muted-foreground gap-2">
+                        <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                        {workflows.length} Active Workflows
+                    </Badge>
                 </div>
 
                 {/* Error display */}
                 {error && (
-                    <div className="mb-6 p-4 bg-red-900/20 border border-red-800 rounded-lg flex items-center gap-3">
-                        <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0" />
-                        <p className="text-red-300 text-sm">{error}</p>
+                    <div className="mb-8 p-4 bg-destructive/10 border border-destructive/20 rounded-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4">
+                        <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0" />
+                        <p className="text-destructive text-sm font-medium">{error}</p>
                     </div>
                 )}
 
                 {/* Empty state */}
                 {workflows.length === 0 ? (
-                    <Card className="text-center py-16 border-dashed border-2 bg-gray-900/50 border-gray-700">
-                        <CardContent className="pt-6">
-                            <GitBranch className="w-20 h-20 text-gray-600 mx-auto mb-6" />
-                            <h2 className="text-2xl font-semibold text-gray-100 mb-2">No workflows yet</h2>
-                            <p className="text-gray-400 mb-6">
-                                Get started by creating your first workflow automation
+                    <Card className="text-center py-24 glass border-dashed bg-transparent border-border/50 rounded-2xl">
+                        <CardContent>
+                            <div className="relative inline-block mb-6">
+                                <GitBranch className="w-20 h-20 text-muted-foreground/30 mx-auto" />
+                                <div className="absolute inset-0 bg-blue-500/10 blur-3xl rounded-full"></div>
+                            </div>
+                            <h2 className="text-2xl font-bold mb-2">No active automations</h2>
+                            <p className="text-muted-foreground mb-8 max-w-sm mx-auto">
+                                Get started by building a visual workflow to monitor prices or execute trades automatically.
                             </p>
                             <Button
                                 onClick={() => navigate('/workflow/new')}
                                 size="lg"
-                                className="gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+                                variant="secondary"
+                                className="gap-2 h-12 rounded-xl px-8 font-bold border border-border"
                             >
                                 <Plus className="w-5 h-5" />
-                                Create your first workflow
+                                Create Workflow
                             </Button>
                         </CardContent>
                     </Card>
@@ -141,86 +156,81 @@ export function WorkflowList() {
                         {workflows.map((workflow) => (
                             <Card
                                 key={workflow.id}
-                                className="bg-gray-900 border-gray-800 hover:bg-gray-800 hover:shadow-2xl hover:shadow-blue-900/20 transition-all hover:scale-[1.02] cursor-pointer group"
+                                className="group relative overflow-hidden bg-card/40 border-border/50 hover:border-primary/50 hover:bg-card/60 transition-all duration-500 cursor-pointer rounded-2xl shadow-xl hover:shadow-primary/5 shadow-black/20"
                                 onClick={() => navigate(`/workflow/${workflow.id}`)}
                             >
-                                <CardHeader>
-                                    <div className="flex items-start justify-between mb-2">
-                                        <div className="flex-1">
-                                            <CardTitle className="flex items-center gap-2 text-gray-100 group-hover:text-blue-400 transition">
-                                                <Network className="w-5 h-5" />
-                                                Workflow
-                                            </CardTitle>
-                                            <CardDescription className="font-mono text-xs mt-1 text-gray-500">
-                                                #{workflow.id.slice(0, 8)}
+                                <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div className="p-1.5 rounded-full bg-primary/10 text-primary">
+                                        <Plus className="w-4 h-4 rotate-45" onClick={(e) => handleDeleteClick(workflow.id, e)}  />
+                                    </div>
+                                </div>
+
+                                <CardHeader className="pb-4">
+                                    <div className="flex items-start justify-between">
+                                        <div className="space-y-1">
+                                            <div className="flex items-center gap-2">
+                                                <div className="p-1.5 bg-blue-500/10 rounded-lg text-blue-500">
+                                                    <Network className="w-4 h-4" />
+                                                </div>
+                                                <CardTitle className="text-lg font-bold group-hover:text-primary transition-colors">
+                                                    {workflow.name}
+                                                </CardTitle>
+                                            </div>
+                                            <CardDescription className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                                                {workflow.description || "Visual trading automation for decentralized finance."}
                                             </CardDescription>
                                         </div>
-                                        {workflow.webhookUrl && (
-                                            <Badge variant="secondary" className="gap-1 bg-gray-800 text-gray-300 border-gray-700">
-                                                <LinkIcon className="w-3 h-3" />
-                                                Webhook
-                                            </Badge>
-                                        )}
                                     </div>
                                 </CardHeader>
 
-                                <CardContent>
-                                    <div className="flex items-center gap-4 mb-4">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                                            <span className="text-sm font-medium text-gray-200">
-                                                {workflow.nodes?.length || 0}
-                                            </span>
-                                            <span className="text-xs text-gray-500">nodes</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                                            <span className="text-sm font-medium text-gray-200">
-                                                {workflow.edges?.length || 0}
-                                            </span>
-                                            <span className="text-xs text-gray-500">edges</span>
-                                        </div>
+                                <CardContent className="space-y-6">
+                                    <div className="flex items-center gap-3">
+                                        <Badge variant="secondary" className="bg-blue-500/5 text-blue-400 border-blue-500/10 hover:bg-blue-500/10 transition-colors">
+                                            {workflow.nodes?.length || 0} Nodes
+                                        </Badge>
+                                        <Badge variant="secondary" className="bg-indigo-500/5 text-indigo-400 border-indigo-500/10 hover:bg-indigo-500/10 transition-colors">
+                                            Active Triggers
+                                        </Badge>
+                                        {workflow.webhookUrl && (
+                                            <div className="p-1 rounded-md bg-green-500/10 text-green-500" title="Webhook Enabled">
+                                                <LinkIcon className="w-3 h-3" />
+                                            </div>
+                                        )}
                                     </div>
 
-                                    <Separator className="my-4 bg-gray-800" />
-
-                                    <div className="flex items-center gap-2 text-xs text-gray-500">
-                                        <Calendar className="w-3.5 h-3.5" />
-                                        {new Date(workflow.createdAt).toLocaleDateString('en-US', {
-                                            month: 'short',
-                                            day: 'numeric',
-                                            year: 'numeric',
-                                        })}
+                                    <div className="flex items-center justify-between text-[11px] text-muted-foreground uppercase tracking-widest font-semibold border-t border-border/50 pt-4">
+                                        <div className="flex items-center gap-1.5">
+                                            <Calendar className="w-3 h-3" />
+                                            {new Date(workflow.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="h-8 w-8 p-0 hover:bg-primary/10 hover:text-primary rounded-lg"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    navigate(`/workflow/${workflow.id}`);
+                                                }}
+                                            >
+                                                <Edit className="w-4 h-4" />
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive rounded-lg"
+                                                onClick={(e) => handleDeleteClick(workflow.id, e)}
+                                                disabled={deletingId === workflow.id}
+                                            >
+                                                {deletingId === workflow.id ? (
+                                                    <Loader2 className="w-3 h-3 animate-spin" />
+                                                ) : (
+                                                    <Trash2 className="w-4 h-4" />
+                                                )}
+                                            </Button>
+                                        </div>
                                     </div>
                                 </CardContent>
-
-                                <CardFooter className="flex gap-2 pt-4">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="flex-1 gap-2 bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-gray-100"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            navigate(`/workflow/${workflow.id}`);
-                                        }}
-                                    >
-                                        <Edit className="w-4 h-4" />
-                                        Edit
-                                    </Button>
-                                    <Button
-                                        variant="destructive"
-                                        size="sm"
-                                        className="bg-red-600 hover:bg-red-700"
-                                        onClick={(e) => handleDeleteClick(workflow.id, e)}
-                                        disabled={deletingId === workflow.id}
-                                    >
-                                        {deletingId === workflow.id ? (
-                                            <Loader2 className="w-4 h-4 animate-spin" />
-                                        ) : (
-                                            <Trash2 className="w-4 h-4" />
-                                        )}
-                                    </Button>
-                                </CardFooter>
                             </Card>
                         ))}
                     </div>

@@ -1,21 +1,33 @@
 import { http } from "@/lib/http";
+import type { Edge, Node } from "@xyflow/react";
 
 export interface Workflow {
     id: string;
     userId: string,
-    nodes: any[],
-    edges: any[],
+    nodes: Node[],
+    edges: Edge[],
+    name?: string;
+    description?: string;
     webhookUrl?: string;
     createdAt: string;
     updatedAt: string;
 }
 
+export interface Execution {
+    id: string;
+    workflowId: string;
+    status: 'SUCCESS' | 'FAILURE';
+    startTime: string;
+    endTime: string | null;
+}
+
 export const workflowApi = {
     getAll: () => http.get<Workflow[]>('/workflows'),
     getById: (id: string) => http.get<Workflow>(`/workflow/${id}`),
-    create: (data: { nodes: any[]; edges: any[] }) =>
+    getExecutions: (id: string) => http.get<Execution[]>(`/workflow/executions/${id}`),
+    create: (data: { nodes: Node[]; edges: Edge[]; name?: string; description?: string }) =>
         http.post<{ workflowId: string }>('/workflow', data),
-    update: (id: string, data: { nodes: any[]; edges: any[] }) =>
+    update: (id: string, data: { nodes: Node[]; edges: Edge[]; name?: string; description?: string }) =>
         http.put<{ workflowId: string; message: string }>(`/workflow/${id}`, data),
     delete: (id: string) =>
         http.delete<{ success: boolean; message: string }>(`/workflow/${id}`),
