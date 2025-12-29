@@ -468,7 +468,7 @@ export default function CreateWorkflow() {
                     onNodesChange={onNodesChange}
                     onEdgesChange={onEdgesChange}
                     onConnect={onConnect}
-                    onConnectEnd={(event, connectionInfo: any) => {
+                    onConnectEnd={(_event, connectionInfo: any) => {
                         if (!connectionInfo.isValid) {
                             const sourceNode = nodes.find(n => n.id === connectionInfo.fromNode?.id);
                             if (sourceNode) {
