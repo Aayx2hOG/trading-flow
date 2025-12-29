@@ -112,7 +112,7 @@ export function WorkflowList() {
                     </Button>
                 </div>
 
-                {/* Status Bar */}
+                {}
                 <div className="flex items-center gap-4 mb-8 text-sm">
                     <Badge variant="outline" className="px-3 py-1 border-border bg-card/50 text-muted-foreground gap-2">
                         <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
@@ -128,7 +128,7 @@ export function WorkflowList() {
                     </div>
                 )}
 
-                {/* Empty state */}
+                {}
                 {workflows.length === 0 ? (
                     <Card className="text-center py-24 glass border-dashed bg-transparent border-border/50 rounded-2xl">
                         <CardContent>

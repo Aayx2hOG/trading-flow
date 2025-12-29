@@ -113,7 +113,7 @@ export default function CreateWorkflow() {
         if (workflowId) loadWorkflow();
     }, [workflowId]);
 
-    // Add global styles for ReactFlow
+    
     useEffect(() => {
         const style = document.createElement('style');
         style.textContent = `
@@ -273,7 +273,7 @@ export default function CreateWorkflow() {
 
     return (
         <div className="w-screen h-screen flex flex-col bg-background text-foreground overflow-hidden">
-            {/* Glossy Top Bar */}
+            {}
             <header className="sticky top-0 z-50 glass border-b border-white/5 px-6 py-4">
                 <div className="flex justify-between items-center max-w-[2000px] mx-auto">
                     <div className="flex items-center gap-6">

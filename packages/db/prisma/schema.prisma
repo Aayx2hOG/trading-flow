@@ -18,7 +18,7 @@ model User {
 
 model Workflow {
   id          String      @id @default(cuid())
-  user        User        @relation(fields: [userId], references: [id])
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String
   name        String      @default("untitled workflow")
   description String?
@@ -40,7 +40,7 @@ enum ExecutionStatus {
 model Execution {
   id         String          @id @default(cuid())
   workflowId String
-  workflow   Workflow        @relation(fields: [workflowId], references: [id])
+  workflow   Workflow        @relation(fields: [workflowId], references: [id], onDelete: Cascade)
   status     ExecutionStatus
   startTime  DateTime        @default(now())
   endTime    DateTime?
@@ -52,7 +52,7 @@ model Execution {
 model Credential {
   id            String   @id @default(uuid())
   userId        String
-  user          User     @relation(fields: [userId], references: [id])
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   name          String
   type          String
   encryptedData String

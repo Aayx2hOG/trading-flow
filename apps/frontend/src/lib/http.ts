@@ -23,7 +23,7 @@ class HttpClient {
             headers,
         });
         if (!response.ok) {
-            // Try to surface server-provided error messages
+            
             let message = `HTTP ${response.status}`;
             try {
                 const data = await response.json();
@@ -32,7 +32,7 @@ class HttpClient {
             } catch { }
             throw new Error(message);
         }
-        // Handle empty responses
+        
         const text = await response.text();
         return text ? JSON.parse(text) : (undefined as unknown as T);
     }

@@ -4,6 +4,7 @@ import { WorkflowList } from './components/WorkflowList';
 import Signin from './pages/Signin';
 import Signup from './pages/Signup';
 import ExecutionHistory from './pages/ExecutionHistory';
+import Credentials from './pages/Credentials';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/workflow/new" element={<CreateWorkflow />} />
           <Route path="/workflow/:workflowId" element={<CreateWorkflow />} />
           <Route path="/workflow/:workflowId/execution" element={<ExecutionHistory />} />
+          <Route path="/credentials" element={<Credentials />} />
         </Routes>
       </BrowserRouter>
     </div>

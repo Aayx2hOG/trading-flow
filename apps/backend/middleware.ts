@@ -14,11 +14,11 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
 
     try {
         const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
-        console.log('Decoded JWT:', decoded); // Debug log
+        console.log('Decoded JWT:', decoded); 
         req.userId = decoded.userId as string;
         next();
     } catch (e) {
-        console.error('JWT verification error:', e); // Debug log
+        console.error('JWT verification error:', e); 
         return res.status(401).json({ message: "Invalid or expired token" });
     }
 }
