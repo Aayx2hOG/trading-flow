@@ -97,12 +97,24 @@ export class WorkflowExecutor {
 
     async execute(workflow: Workflow): Promise<{ success: boolean, results: any[]; error?: string }> {
         try {
+            if (!workflow.nodes || workflow.nodes.length === 0){
+                return { success: false, results: [], error: 'No nodes found' };
+            }
+            if (!workflow.edges || workflow.edges.length === 0){
+                return { success: false, results: [], error: 'No edges found' };
+            }
             const results: any[] = [];
             const nodeResults = new Map<string, any>();
 
             const triggerNode = workflow.nodes.find(node => node.data.kind === 'trigger');
             if (!triggerNode) {
                 return { success: false, results, error: 'No trigger node found' };
+            }
+
+            for (const node of workflow.nodes){
+                if (!node.data || !node.data.kind){
+                    return { success: false, results, error: 'Invalid node data' };
+                }
             }
 
             const executionOrder = this.buildExecutionOrder(workflow.nodes, workflow.edges, triggerNode.id);
