@@ -5,6 +5,7 @@ import { HttpAction } from "./actions/http.action";
 import { HyperliquidAction } from "./actions/hyperliquid.action";
 import { LighterAction } from "./actions/lighter.action";
 import { CredentialsService } from "./credentials.service";
+import { ConditionAction } from "./actions/condition.action";
 
 interface Node {
     id: string,
@@ -34,6 +35,7 @@ export class WorkflowExecutor {
     private credentials = new CredentialsService();
 
     constructor() {
+        this.actions.set('condition', new ConditionAction());
         this.actions.set('http', new HttpAction());
         this.actions.set('lighter', new LighterAction());
         this.actions.set('backpack', new BackpackAction());
@@ -154,7 +156,8 @@ export class WorkflowExecutor {
                     results.push({ nodeId: node.id, type: node.type, result });
 
                     if (!result?.success) {
-                        return { success: false, results, error: `Node ${node.id} execution failed` };
+                        const errorMsg = node.type === 'condition' ? result.error : `Node ${node.id} execution failed`;
+                        return { success: false, results, error: errorMsg };
                     }
                 }
             }
