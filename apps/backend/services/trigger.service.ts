@@ -125,14 +125,16 @@ export class TriggerService {
 
     private async fetchPrice(symbol: string): Promise<number> {
         try {
-            const response = await fetch(`https://api.jup.ag/price/v2?ids=${symbol}`);
+            const binance = symbol.toUpperCase() === 'SOL' ? 'SOLUSDT' : `${symbol.toUpperCase()}USDT`;
+            const response = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${binance}`);
             if (!response.ok){
-                throw new Error(`Jupter API Error: ${response.statusText}`);
+                throw new Error(`Binance API Error: ${response.statusText}`);
             }
             const data: any = await response.json();
-            const price = data.data[symbol]?.price;
+            const price = data.price;
+
             if (!price){
-                console.warn(`Price not found for ${symbol}`);
+                console.warn(`No price found for ${symbol}`);
                 return 50 + Math.random() * 100;
             }
             return parseFloat(price);
