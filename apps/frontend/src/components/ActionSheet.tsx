@@ -1,6 +1,5 @@
 import type { NodeKind, NodeMetaData } from "./CreateWorkflow";
 import { Button } from "@/components/ui/button"
-import type { TradingMetadata } from "common/types"
 import {
     Select,
     SelectContent,
@@ -33,30 +32,46 @@ const SUPPORTED_ACTIONS = [{
     id: 'backpack',
     title: 'Backpack',
     description: 'Place a trade on Backpack'
+}, {
+    id: 'condition',
+    title: 'Condition',
+    description: 'Add a logic gate to your workflow'
 }]
 
 export const ActionSheet = ({
     onSelect,
-    onClose
+    onClose,
+    initialType,
+    initialMetaData
 }: {
     onSelect: (kind: NodeKind, metaData: NodeMetaData) => void
     onClose: () => void
+    initialType?: NodeKind
+    initialMetaData?: NodeMetaData
 }) => {
-    const [metaData, setMetaData] = useState<TradingMetadata | {}>({});
-    const [selectedAction, setSelectedAction] = useState<NodeKind>(SUPPORTED_ACTIONS[0].id as NodeKind);
+    const [metaData, setMetaData] = useState<NodeMetaData | {}>(initialMetaData || {});
+    const [selectedAction, setSelectedAction] = useState<NodeKind>(initialType || SUPPORTED_ACTIONS[0].id as NodeKind);
 
     return <Sheet open={true} onOpenChange={(open) => !open && onClose()}>
         <SheetContent className="sm:max-w-[500px]">
             <SheetHeader>
                 <SheetTitle className="text-2xl font-bold">Select Action</SheetTitle>
                 <SheetDescription className="text-base">
-                    Choose the trading action to execute
+                    Choose the action or logic node to add
                 </SheetDescription>
             </SheetHeader>
             <div className="space-y-6 py-6 px-2">
                 <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Exchange</label>
-                    <Select value={selectedAction} onValueChange={(value) => setSelectedAction(value as NodeKind)}>
+                    <label className="text-sm font-medium text-gray-700">Action Type</label>
+                    <Select value={selectedAction} onValueChange={(value) => {
+                        const newKind = value as NodeKind;
+                        setSelectedAction(newKind);
+                        if (newKind === 'condition') {
+                            setMetaData({ leftValue: '{{currentPrice}}', operator: '>', rightValue: '' });
+                        } else {
+                            setMetaData({});
+                        }
+                    }}>
                         <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select an action" />
                         </SelectTrigger>
@@ -71,11 +86,47 @@ export const ActionSheet = ({
                         </SelectContent>
                     </Select>
                 </div>
+
+                {selectedAction === 'condition' && (
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-700">Left Value (e.g., {"{{currentPrice}}"})</label>
+                            <Input
+                                placeholder="{{currentPrice}}"
+                                value={(metaData as any).leftValue || ''}
+                                onChange={(e) => setMetaData({ ...metaData, leftValue: e.target.value })}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-700">Operator</label>
+                            <Select value={(metaData as any).operator || ''} onValueChange={(value) => setMetaData({ ...metaData, operator: value })}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select operator" />
+                                </SelectTrigger>
+                                <SelectContent className="**:data-radix-select-viewport:pl-2">
+                                    <SelectItem value=">">Greater Than (&gt;)</SelectItem>
+                                    <SelectItem value="<">Less Than (&lt;)</SelectItem>
+                                    <SelectItem value="===">Equals (===)</SelectItem>
+                                    <SelectItem value="!=">Not Equals (!=)</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-700">Right Value (e.g., 150)</label>
+                            <Input
+                                placeholder="150"
+                                value={(metaData as any).rightValue || ''}
+                                onChange={(e) => setMetaData({ ...metaData, rightValue: e.target.value })}
+                            />
+                        </div>
+                    </div>
+                )}
+
                 {(selectedAction === 'hyperliquid' || selectedAction === 'lighter' || selectedAction === 'backpack') &&
                     <div className="space-y-4">
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-gray-700">Position Type</label>
-                            <Select value={'type' in metaData ? metaData.type : ''} onValueChange={(value) => setMetaData(metaData => ({
+                            <Select value={(metaData as any).type || ''} onValueChange={(value) => setMetaData(metaData => ({
                                 ...metaData,
                                 type: value
                             }))}>
@@ -84,10 +135,10 @@ export const ActionSheet = ({
                                 </SelectTrigger>
                                 <SelectContent className="**:data-radix-select-viewport:pl-2">
                                     <SelectGroup>
-                                        <SelectItem value={'long'}>
+                                        <SelectItem value={'LONG'}>
                                             <span className="font-medium">LONG</span>
                                         </SelectItem>
-                                        <SelectItem value={'short'}>
+                                        <SelectItem value={'SHORT'}>
                                             <span className="font-medium">SHORT</span>
                                         </SelectItem>
                                     </SelectGroup>
@@ -96,7 +147,7 @@ export const ActionSheet = ({
                         </div>
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-gray-700">Symbol</label>
-                            <Select value={'symbol' in metaData ? metaData.symbol : ''} onValueChange={(value) => setMetaData(metaData => ({
+                            <Select value={(metaData as any).symbol || ''} onValueChange={(value) => setMetaData(metaData => ({
                                 ...metaData,
                                 symbol: value
                             }))}>
@@ -120,7 +171,7 @@ export const ActionSheet = ({
                                 type="number"
                                 placeholder="e.g., 0.5"
                                 className="w-full"
-                                value={'qty' in metaData ? metaData.qty : ''}
+                                value={(metaData as any).qty || ''}
                                 onChange={(e) => setMetaData(metaData => ({
                                     ...metaData,
                                     qty: Number(e.target.value)
@@ -137,7 +188,7 @@ export const ActionSheet = ({
                     className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-6"
                     onClick={() => { onSelect(selectedAction, metaData as NodeMetaData) }}
                 >
-                    Create Action
+                    Add {selectedAction === 'condition' ? 'Condition' : 'Action'}
                 </Button>
             </SheetFooter>
         </SheetContent >

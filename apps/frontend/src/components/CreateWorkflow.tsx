@@ -25,9 +25,11 @@ import { WebhookTrigger } from '@/nodes/triggers/WebhookTrigger';
 import { Lighter } from '@/nodes/actions/Lighter';
 import { Backpack } from '@/nodes/actions/Backpack';
 import { Hyperliquid } from '@/nodes/actions/Hyperliquid';
+import { Condition } from '@/nodes/actions/Condition';
 
 import { workflowApi } from '@/api/workflow.api';
 import type { PriceTriggerMetaData, TimerNodeMetaData, TradingMetadata } from 'common/types';
+import type { ConditionMetaData } from '@/nodes/actions/Condition';
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -55,6 +57,7 @@ const nodeTypes = {
     lighter: Lighter,
     backpack: Backpack,
     hyperliquid: Hyperliquid,
+    condition: Condition,
 };
 
 export type NodeKind =
@@ -63,12 +66,14 @@ export type NodeKind =
     | 'webhook-trigger'
     | 'hyperliquid'
     | 'backpack'
-    | 'lighter';
+    | 'lighter'
+    | 'condition';
 
 export type NodeMetaData =
     | TradingMetadata
     | PriceTriggerMetaData
-    | TimerNodeMetaData;
+    | TimerNodeMetaData
+    | ConditionMetaData;
 
 interface NodeType {
     id: string;
@@ -108,6 +113,11 @@ export default function CreateWorkflow() {
 
     const [webhookUrl, setWebhookUrl] = useState<string | null>(null);
     const [webhookCopied, setWebhookCopied] = useState(false);
+    const [editingNode, setEditingNode] = useState<NodeType | null>(null);
+
+    const onNodeClick = useCallback((_event: React.MouseEvent, node: any) => {
+        setEditingNode(node as NodeType);
+    }, []);
 
     useEffect(() => {
         if (workflowId) loadWorkflow();
@@ -416,6 +426,40 @@ export default function CreateWorkflow() {
                 )}
             </header>
 
+            {editingNode && editingNode.data.kind === 'trigger' && (
+                <TriggerSheet
+                    initialType={editingNode.type}
+                    initialMetaData={editingNode.data.metaData}
+                    onClose={() => setEditingNode(null)}
+                    onSelect={(type, metaData) => {
+                        setNodes(nds => nds.map(n => 
+                            n.id === editingNode.id 
+                                ? { ...n, type, data: { ...n.data, metaData } } 
+                                : n
+                        ));
+                        setEditingNode(null);
+                        setHasUnsavedChanges(true);
+                    }}
+                />
+            )}
+
+            {editingNode && editingNode.data.kind === 'action' && (
+                <ActionSheet
+                    initialType={editingNode.type}
+                    initialMetaData={editingNode.data.metaData}
+                    onClose={() => setEditingNode(null)}
+                    onSelect={(type, metaData) => {
+                        setNodes(nds => nds.map(n => 
+                            n.id === editingNode.id 
+                                ? { ...n, type, data: { ...n.data, metaData } } 
+                                : n
+                        ));
+                        setEditingNode(null);
+                        setHasUnsavedChanges(true);
+                    }}
+                />
+            )}
+
             {!nodes.length && !isEditMode && (
                 <TriggerSheet
                     onClose={() => { }}
@@ -468,6 +512,7 @@ export default function CreateWorkflow() {
                     onNodesChange={onNodesChange}
                     onEdgesChange={onEdgesChange}
                     onConnect={onConnect}
+                    onNodeClick={onNodeClick}
                     onConnectEnd={(_event, connectionInfo: any) => {
                         if (!connectionInfo.isValid) {
                             const sourceNode = nodes.find(n => n.id === connectionInfo.fromNode?.id);

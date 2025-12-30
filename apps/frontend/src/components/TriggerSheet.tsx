@@ -38,15 +38,21 @@ export const SUPPORTED_ASSETS = ['SOL', 'BTC', 'ETH'];
 
 export const TriggerSheet = ({
     onSelect,
-    onClose
+    onClose,
+    initialType,
+    initialMetaData
 }: {
     onSelect: (kind: NodeKind, metaData: NodeMetaData) => void
     onClose: () => void
+    initialType?: NodeKind
+    initialMetaData?: NodeMetaData
 }) => {
-    const [metaData, setMetaData] = useState<PriceTriggerMetaData | TimerNodeMetaData>({
-        time: 3600
-    });
-    const [selectedTrigger, setSelectedTrigger] = useState<NodeKind>(SUPPORTED_TRIGGERS[0].id as NodeKind);
+    const [metaData, setMetaData] = useState<PriceTriggerMetaData | TimerNodeMetaData>(
+        (initialMetaData as any) || { time: 3600 }
+    );
+    const [selectedTrigger, setSelectedTrigger] = useState<NodeKind>(
+        initialType || SUPPORTED_TRIGGERS[0].id as NodeKind
+    );
     return <Sheet open={true} onOpenChange={(open) => !open && onClose()}>
         <SheetContent className="sm:max-w-[500px]">
             <SheetHeader>
