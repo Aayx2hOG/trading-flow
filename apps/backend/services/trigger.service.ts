@@ -124,7 +124,22 @@ export class TriggerService {
     }
 
     private async fetchPrice(symbol: string): Promise<number> {
-        return 50 + Math.random() * 100;
+        try {
+            const response = await fetch(`https://api.jup.ag/price/v2?ids=${symbol}`);
+            if (!response.ok){
+                throw new Error(`Jupter API Error: ${response.statusText}`);
+            }
+            const data: any = await response.json();
+            const price = data.data[symbol]?.price;
+            if (!price){
+                console.warn(`Price not found for ${symbol}`);
+                return 50 + Math.random() * 100;
+            }
+            return parseFloat(price);
+        }catch(e){
+            console.error(`Error fetching price for ${symbol}:`, e);
+            return 50 + Math.random() * 100;
+        }
     }
 
     private parseScheduleToMs(schedule: string): number {
