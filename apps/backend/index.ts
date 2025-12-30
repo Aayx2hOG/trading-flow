@@ -188,7 +188,13 @@ app.get('/workflow/:workflowId', authMiddleware, async (req: Request, res: Respo
 app.get('/workflow/executions/:workflowId', authMiddleware, async (req: Request, res: Response) => {
     const workflow = await prismaClient.workflow.findUnique({
         where: { id: req.params.workflowId },
-        include: { executions: true }
+        include: { 
+            executions: {
+                orderBy: {
+                    startTime: 'desc'
+                }
+            } 
+        }
     });
 
     if (!workflow || workflow.userId !== req.userId) {

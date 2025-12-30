@@ -57,20 +57,36 @@ export class TriggerService {
         }
     }
 
+    private lastStates: Map<string, boolean> = new Map();
+
     private startPriceTrigger(workflowId: string, metaData: any) {
         const symbol = metaData?.asset ?? metaData?.symbol ?? 'UNKNOWN';
         const key = `${workflowId}-price-${symbol}`;
+
+        if (this.intervals.has(key)) {
+            clearInterval(this.intervals.get(key));
+        }
+
+        this.lastStates.set(key, false);
+        console.log(`Starting Price Trigger loop for ${symbol} (Target: ${metaData.price})`);
+
         const interval = setInterval(async () => {
             try {
-                const symbol = metaData.asset ?? metaData.symbol;
                 const currentPrice = await this.fetchPrice(symbol);
                 const targetPrice = metaData.price;
                 const condition = metaData.condition ?? 'above';
-                const shouldTrigger =
+
+                const isCurrentlyMet =
                     (condition === "above" && currentPrice >= targetPrice) ||
                     (condition === "below" && currentPrice <= targetPrice);
 
-                if (shouldTrigger) {
+                const wasLastMet = this.lastStates.get(key) || false;
+
+                console.log(`Checking ${symbol}: Current ${currentPrice} | Target ${targetPrice} | Met: ${isCurrentlyMet}`);
+
+                if (isCurrentlyMet && !wasLastMet) {
+                    console.log(`Condition Met for ${symbol}: ${currentPrice} is ${condition} ${targetPrice}`);
+                    
                     await this.executor.executeWorkflowById(workflowId, {
                         trigger: 'price',
                         symbol,
@@ -79,10 +95,14 @@ export class TriggerService {
                         condition,
                     });
                 }
+
+                this.lastStates.set(key, isCurrentlyMet);
+
             } catch (e) {
-                console.error(`Error executing price trigger for workflow ${workflowId}:`, e);
+                console.error(`Error executing price trigger loop:`, e);
             }
-        }, 10000)
+        }, 10000); 
+
         this.intervals.set(key, interval);
     }
 
