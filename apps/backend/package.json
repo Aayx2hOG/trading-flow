@@ -15,9 +15,15 @@
   "dependencies": {
     "@types/express": "^5.0.5",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/passport": "^1.0.17",
+    "@types/passport-github2": "^1.2.9",
+    "@types/passport-google-oauth20": "^2.0.17",
+    "db": "*",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "db": "*",
+    "passport": "^0.7.0",
+    "passport-github2": "^0.1.12",
+    "passport-google-oauth20": "^2.0.0",
     "types": "*"
   }
 }

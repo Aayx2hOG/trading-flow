@@ -9,6 +9,7 @@ import { authMiddleware } from './middleware';
 import { WorkflowExecutor } from './services/workflow.service';
 import { TriggerService } from './services/trigger.service';
 import { CredentialsService } from './services/credentials.service';
+import passport from 'passport';
 
 const app = express();
 const JWT_SECRET = process.env.JWT_SECRET || '';
@@ -21,6 +22,7 @@ triggerService.startAllTriggers().catch(err => {
 });
 
 app.use(cors());
+app.use(passport.initialize());
 app.use(express.json());
 
 app.post('/signup', async (req: Request, res: Response) => {
@@ -61,6 +63,10 @@ app.post('/signin', async (req: Request, res: Response) => {
     const user = await prismaClient.user.findUnique({ where: { email: data.email } });
     if (!user) {
         return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    if (!user.password) {
+        return res.status(401).json({ error: 'This account uses social login. Please sign in with Google or GitHub.' });
     }
 
     const isValidPassword = await bcrypt.compare(data.password, user.password);
@@ -404,6 +410,20 @@ app.all('/webhook/:webhookId', async (req: Request, res: Response) => {
     } catch (e) {
         res.status(500).json({ error: 'Webhook execution failed' });
     }
+});
+
+app.get('/auth/google', passport.authenticate('google', {session: false}));
+app.get('/auth/google/callback', passport.authenticate('google', {session: false, failureRedirect: '/login'}), (req, res) => {
+    const user = req.user as any;
+    const token = jwt.sign({userId: user.id}, JWT_SECRET || "secret hai");
+    res.redirect(`http://localhost:5173/auth-callback?token=${token}`);
+});
+
+app.get('/auth/github', passport.authenticate('github', { session: false }));
+app.get('/auth/github/callback', passport.authenticate('github', { session: false, failureRedirect: '/login' }), (req, res) => {
+    const user = req.user as any;
+    const token = jwt.sign({ userId: user.id }, JWT_SECRET || 'default_secret');
+    res.redirect(`http://localhost:5173/auth-callback?token=${token}`);
 });
 
 process.on('SIGTERM', () => {
