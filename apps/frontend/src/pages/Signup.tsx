@@ -58,6 +58,34 @@ export default function Signup() {
                 </CardHeader>
                 <form onSubmit={handleSubmit}>
                     <CardContent className="space-y-4 px-8 pb-8">
+                        <div className="grid grid-cols-2 gap-4 mb-6">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                className="h-12 bg-white/5 border-white/10 hover:bg-white/10 rounded-xl font-bold"
+                                onClick={() => window.location.href = 'http://localhost:3000/auth/github'}
+                            >
+                                <Github className="mr-2 h-4 w-4" /> GitHub
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                className="h-12 bg-white/5 border-white/10 hover:bg-white/10 rounded-xl font-bold"
+                                onClick={() => window.location.href = 'http://localhost:3000/auth/google'}
+                            >
+                                <Mail className="mr-2 h-4 w-4" /> Google
+                            </Button>
+                        </div>
+
+                        <div className="relative mb-6">
+                            <div className="absolute inset-0 flex items-center">
+                                <span className="w-full border-t border-white/10" />
+                            </div>
+                            <div className="relative flex justify-center text-[10px] uppercase">
+                                <span className="bg-[#030712] px-2 text-muted-foreground font-bold tracking-widest">Or continue with</span>
+                            </div>
+                        </div>
+
                         <div className="space-y-2">
                             <Label htmlFor="username" className="text-xs font-bold uppercase tracking-widest text-muted-foreground/70">Username</Label>
                             <Input
@@ -122,5 +150,5 @@ export default function Signup() {
     );
 }
 
-import { Workflow as WorkflowIcon, Loader2 } from 'lucide-react';
+import { Workflow as WorkflowIcon, Loader2, Github, Mail } from 'lucide-react';
 

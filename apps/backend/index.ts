@@ -10,6 +10,7 @@ import { WorkflowExecutor } from './services/workflow.service';
 import { TriggerService } from './services/trigger.service';
 import { CredentialsService } from './services/credentials.service';
 import passport from 'passport';
+import './services/passport';
 
 const app = express();
 const JWT_SECRET = process.env.JWT_SECRET || '';
