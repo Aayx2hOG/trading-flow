@@ -5,7 +5,7 @@ import { prismaClient } from 'db/client';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { CreateWorkflowSchema, SignInSchema, SignUpSchema } from 'common/types';
-import { authMiddleware } from './middleware';
+import { authMiddleware } from './auth.middleware';
 import { WorkflowExecutor } from './services/workflow.service';
 import { TriggerService } from './services/trigger.service';
 import { CredentialsService } from './services/credentials.service';
@@ -18,9 +18,9 @@ const workflowExecutor = new WorkflowExecutor();
 const triggerService = new TriggerService();
 const credentialsService = new CredentialsService();
 
-triggerService.startAllTriggers().catch(err => {
-    console.error('Error starting triggers:', err);
-});
+// triggerService.startAllTriggers().catch(err => {
+//     console.error('Error starting triggers:', err);
+// });
 
 app.use(cors());
 app.use(passport.initialize());
@@ -432,4 +432,8 @@ process.on('SIGTERM', () => {
     process.exit(0);
 });
 
-app.listen(process.env.PORT || 3000); 
+if (!process.env.VERCEL) {
+    app.listen(process.env.PORT || 3000);
+}
+
+export default app; 
