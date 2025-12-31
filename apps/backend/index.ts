@@ -18,9 +18,9 @@ const workflowExecutor = new WorkflowExecutor();
 const triggerService = new TriggerService();
 const credentialsService = new CredentialsService();
 
-// triggerService.startAllTriggers().catch(err => {
-//     console.error('Error starting triggers:', err);
-// });
+triggerService.startAllTriggers().catch(err => {
+    console.error('Error starting triggers:', err);
+});
 
 app.use(cors());
 app.use(passport.initialize());
