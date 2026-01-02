@@ -7,6 +7,7 @@ import { LighterAction } from "./actions/lighter.action";
 import { CredentialsService } from "./credentials.service";
 import { ConditionAction } from "./actions/condition.action";
 import { EmailAction } from "./actions/email.action";
+import { JupiterAction } from "./actions/jupiter.action";
 
 interface Node {
     id: string,
@@ -42,6 +43,7 @@ export class WorkflowExecutor {
         this.actions.set('backpack', new BackpackAction());
         this.actions.set('hyperliquid', new HyperliquidAction());
         this.actions.set('email', new EmailAction());
+        this.actions.set('jupiter-swap', new JupiterAction());
     }
 
     async executeWorkflowById(workflowId: string, triggerData?: any): Promise<string> {

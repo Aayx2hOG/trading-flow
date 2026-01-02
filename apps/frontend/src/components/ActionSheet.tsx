@@ -42,6 +42,10 @@ const SUPPORTED_ACTIONS = [{
     id: 'email',
     title: 'Email',
     description: 'Send an email notification'
+}, {
+    id: 'jupiter-swap',
+    title: 'Jupiter Swap',
+    description: 'Swap tokens on Solana using Jupiter'
 }]
 
 export const ActionSheet = ({
@@ -131,6 +135,46 @@ export const ActionSheet = ({
                                 value={(metaData as any).rightValue || ''}
                                 onChange={(e) => setMetaData({ ...metaData, rightValue: e.target.value })}
                             />
+                        </div>
+                    </div>
+                )}
+                
+                {selectedAction === 'jupiter-swap' && (
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-700">Input Token Mint</label>
+                            <Input
+                                placeholder="So11111111111111111111111111111111111111112"
+                                value={(metaData as any).inputMint || ''}
+                                onChange={(e) => setMetaData({ ...metaData, inputMint: e.target.value })}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-700">Output Token Mint</label>
+                            <Input
+                                placeholder="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+                                value={(metaData as any).outputMint || ''}
+                                onChange={(e) => setMetaData({ ...metaData, outputMint: e.target.value })}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-700">Amount (Lamports/Units)</label>
+                            <Input
+                                type="number"
+                                placeholder="1000000"
+                                value={(metaData as any).amount || ''}
+                                onChange={(e) => setMetaData({ ...metaData, amount: Number(e.target.value) })}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-700">Slippage (BPS)</label>
+                            <Input
+                                type="number"
+                                placeholder="50"
+                                value={(metaData as any).slippageBps || ''}
+                                onChange={(e) => setMetaData({ ...metaData, slippageBps: Number(e.target.value) })}
+                            />
+                             <p className="text-xs text-gray-500">100 = 1%</p>
                         </div>
                     </div>
                 )}

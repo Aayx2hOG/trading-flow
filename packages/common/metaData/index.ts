@@ -15,3 +15,10 @@ export type WebhookTriggerMetaData = {
     method: 'GET' | 'POST' | 'PUT' | 'DELETE',
     endpoint: string,
 }
+
+export type JupiterSwapMetaData = {
+    inputMint: string;
+    outputMint: string;
+    amount: number;
+    slippageBps: number;
+}

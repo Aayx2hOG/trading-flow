@@ -27,9 +27,10 @@ import { Backpack } from '@/nodes/actions/Backpack';
 import { Hyperliquid } from '@/nodes/actions/Hyperliquid';
 import { Condition } from '@/nodes/actions/Condition';
 import { Email } from '@/nodes/actions/Email';
+import { Jupiter } from '@/nodes/actions/Jupiter';
 
 import { workflowApi } from '@/api/workflow.api';
-import type { PriceTriggerMetaData, TimerNodeMetaData, TradingMetadata } from 'common/types';
+import type { PriceTriggerMetaData, TimerNodeMetaData, TradingMetadata, JupiterSwapMetaData } from 'common/types';
 import type { ConditionMetaData } from '@/nodes/actions/Condition';
 
 import { Button } from '@/components/ui/button';
@@ -60,6 +61,7 @@ const nodeTypes = {
     hyperliquid: Hyperliquid,
     condition: Condition,
     email: Email,
+    'jupiter-swap': Jupiter,
 };
 
 export type NodeKind =
@@ -70,13 +72,15 @@ export type NodeKind =
     | 'backpack'
     | 'lighter'
     | 'condition'
-    | 'email';
+    | 'email'
+    | 'jupiter-swap';
 
 export type NodeMetaData =
     | TradingMetadata
     | PriceTriggerMetaData
     | TimerNodeMetaData
-    | ConditionMetaData;
+    | ConditionMetaData
+    | JupiterSwapMetaData;
 
 interface NodeType {
     id: string;

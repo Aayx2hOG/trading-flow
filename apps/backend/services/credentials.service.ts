@@ -1,5 +1,5 @@
 import { prismaClient } from "db/client";
-import { decryptObject, encryptObject } from "./crypto";
+import { decryptObject, encryptObject } from "./crypto.service";
 
 const VAULT_SECRET = process.env.CREDENTIALS_KEY || process.env.JWT_SECRET;
 
