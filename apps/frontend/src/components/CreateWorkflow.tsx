@@ -26,6 +26,7 @@ import { Lighter } from '@/nodes/actions/Lighter';
 import { Backpack } from '@/nodes/actions/Backpack';
 import { Hyperliquid } from '@/nodes/actions/Hyperliquid';
 import { Condition } from '@/nodes/actions/Condition';
+import { Email } from '@/nodes/actions/Email';
 
 import { workflowApi } from '@/api/workflow.api';
 import type { PriceTriggerMetaData, TimerNodeMetaData, TradingMetadata } from 'common/types';
@@ -58,6 +59,7 @@ const nodeTypes = {
     backpack: Backpack,
     hyperliquid: Hyperliquid,
     condition: Condition,
+    email: Email,
 };
 
 export type NodeKind =
@@ -67,7 +69,8 @@ export type NodeKind =
     | 'hyperliquid'
     | 'backpack'
     | 'lighter'
-    | 'condition';
+    | 'condition'
+    | 'email';
 
 export type NodeMetaData =
     | TradingMetadata
@@ -83,6 +86,7 @@ interface NodeType {
         kind: 'trigger' | 'action';
         metaData: NodeMetaData;
     };
+    credentials?: { refId: string };
 }
 
 interface Edge {
@@ -449,9 +453,15 @@ export default function CreateWorkflow() {
                     initialMetaData={editingNode.data.metaData}
                     onClose={() => setEditingNode(null)}
                     onSelect={(type, metaData) => {
+                        const { credentialRefId, ...cleanMetaData } = metaData as any;
                         setNodes(nds => nds.map(n => 
                             n.id === editingNode.id 
-                                ? { ...n, type, data: { ...n.data, metaData } } 
+                                ? { 
+                                    ...n, 
+                                    type, 
+                                    data: { ...n.data, metaData: cleanMetaData },
+                                    credentials: credentialRefId ? { refId: credentialRefId } : undefined
+                                  } 
                                 : n
                         ));
                         setEditingNode(null);
@@ -482,13 +492,15 @@ export default function CreateWorkflow() {
                 <ActionSheet
                     onSelect={(type, metaData) => {
                         const nodeId = Math.random().toString();
+                        const { credentialRefId, ...cleanMetaData } = metaData as any;
                         setNodes([...nodes, {
                             id: nodeId,
                             type,
                             data: {
                                 kind: 'action',
-                                metaData,
+                                metaData: cleanMetaData,
                             },
+                            credentials: credentialRefId ? { refId: credentialRefId } : undefined,
                             position: selectAction.position
                         }]);
                         setEdges([...edges, {

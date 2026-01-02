@@ -29,6 +29,7 @@ export type WorkflowMinAggregateOutputType = {
   userId: string | null
   name: string | null
   description: string | null
+  isEnabled: boolean | null
   webhookUrl: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -39,6 +40,7 @@ export type WorkflowMaxAggregateOutputType = {
   userId: string | null
   name: string | null
   description: string | null
+  isEnabled: boolean | null
   webhookUrl: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -51,6 +53,7 @@ export type WorkflowCountAggregateOutputType = {
   description: number
   nodes: number
   edges: number
+  isEnabled: number
   webhookUrl: number
   createdAt: number
   updatedAt: number
@@ -63,6 +66,7 @@ export type WorkflowMinAggregateInputType = {
   userId?: true
   name?: true
   description?: true
+  isEnabled?: true
   webhookUrl?: true
   createdAt?: true
   updatedAt?: true
@@ -73,6 +77,7 @@ export type WorkflowMaxAggregateInputType = {
   userId?: true
   name?: true
   description?: true
+  isEnabled?: true
   webhookUrl?: true
   createdAt?: true
   updatedAt?: true
@@ -85,6 +90,7 @@ export type WorkflowCountAggregateInputType = {
   description?: true
   nodes?: true
   edges?: true
+  isEnabled?: true
   webhookUrl?: true
   createdAt?: true
   updatedAt?: true
@@ -170,6 +176,7 @@ export type WorkflowGroupByOutputType = {
   description: string | null
   nodes: runtime.JsonValue
   edges: runtime.JsonValue
+  isEnabled: boolean
   webhookUrl: string | null
   createdAt: Date
   updatedAt: Date
@@ -203,6 +210,7 @@ export type WorkflowWhereInput = {
   description?: Prisma.StringNullableFilter<"Workflow"> | string | null
   nodes?: Prisma.JsonFilter<"Workflow">
   edges?: Prisma.JsonFilter<"Workflow">
+  isEnabled?: Prisma.BoolFilter<"Workflow"> | boolean
   webhookUrl?: Prisma.StringNullableFilter<"Workflow"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Workflow"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Workflow"> | Date | string
@@ -217,6 +225,7 @@ export type WorkflowOrderByWithRelationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   nodes?: Prisma.SortOrder
   edges?: Prisma.SortOrder
+  isEnabled?: Prisma.SortOrder
   webhookUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -235,6 +244,7 @@ export type WorkflowWhereUniqueInput = Prisma.AtLeast<{
   description?: Prisma.StringNullableFilter<"Workflow"> | string | null
   nodes?: Prisma.JsonFilter<"Workflow">
   edges?: Prisma.JsonFilter<"Workflow">
+  isEnabled?: Prisma.BoolFilter<"Workflow"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Workflow"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Workflow"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -248,6 +258,7 @@ export type WorkflowOrderByWithAggregationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   nodes?: Prisma.SortOrder
   edges?: Prisma.SortOrder
+  isEnabled?: Prisma.SortOrder
   webhookUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -266,6 +277,7 @@ export type WorkflowScalarWhereWithAggregatesInput = {
   description?: Prisma.StringNullableWithAggregatesFilter<"Workflow"> | string | null
   nodes?: Prisma.JsonWithAggregatesFilter<"Workflow">
   edges?: Prisma.JsonWithAggregatesFilter<"Workflow">
+  isEnabled?: Prisma.BoolWithAggregatesFilter<"Workflow"> | boolean
   webhookUrl?: Prisma.StringNullableWithAggregatesFilter<"Workflow"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Workflow"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Workflow"> | Date | string
@@ -277,6 +289,7 @@ export type WorkflowCreateInput = {
   description?: string | null
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  isEnabled?: boolean
   webhookUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -291,6 +304,7 @@ export type WorkflowUncheckedCreateInput = {
   description?: string | null
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  isEnabled?: boolean
   webhookUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -303,6 +317,7 @@ export type WorkflowUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  isEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   webhookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -317,6 +332,7 @@ export type WorkflowUncheckedUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  isEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   webhookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -330,6 +346,7 @@ export type WorkflowCreateManyInput = {
   description?: string | null
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  isEnabled?: boolean
   webhookUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -341,6 +358,7 @@ export type WorkflowUpdateManyMutationInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  isEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   webhookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -353,6 +371,7 @@ export type WorkflowUncheckedUpdateManyInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  isEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   webhookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -375,6 +394,7 @@ export type WorkflowCountOrderByAggregateInput = {
   description?: Prisma.SortOrder
   nodes?: Prisma.SortOrder
   edges?: Prisma.SortOrder
+  isEnabled?: Prisma.SortOrder
   webhookUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -385,6 +405,7 @@ export type WorkflowMaxOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  isEnabled?: Prisma.SortOrder
   webhookUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -395,6 +416,7 @@ export type WorkflowMinOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  isEnabled?: Prisma.SortOrder
   webhookUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -447,6 +469,10 @@ export type WorkflowUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.WorkflowScalarWhereInput | Prisma.WorkflowScalarWhereInput[]
 }
 
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
+}
+
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
 }
@@ -471,6 +497,7 @@ export type WorkflowCreateWithoutUserInput = {
   description?: string | null
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  isEnabled?: boolean
   webhookUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -483,6 +510,7 @@ export type WorkflowUncheckedCreateWithoutUserInput = {
   description?: string | null
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  isEnabled?: boolean
   webhookUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -525,6 +553,7 @@ export type WorkflowScalarWhereInput = {
   description?: Prisma.StringNullableFilter<"Workflow"> | string | null
   nodes?: Prisma.JsonFilter<"Workflow">
   edges?: Prisma.JsonFilter<"Workflow">
+  isEnabled?: Prisma.BoolFilter<"Workflow"> | boolean
   webhookUrl?: Prisma.StringNullableFilter<"Workflow"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Workflow"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Workflow"> | Date | string
@@ -536,6 +565,7 @@ export type WorkflowCreateWithoutExecutionsInput = {
   description?: string | null
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  isEnabled?: boolean
   webhookUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -549,6 +579,7 @@ export type WorkflowUncheckedCreateWithoutExecutionsInput = {
   description?: string | null
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  isEnabled?: boolean
   webhookUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -576,6 +607,7 @@ export type WorkflowUpdateWithoutExecutionsInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  isEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   webhookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -589,6 +621,7 @@ export type WorkflowUncheckedUpdateWithoutExecutionsInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  isEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   webhookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -600,6 +633,7 @@ export type WorkflowCreateManyUserInput = {
   description?: string | null
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  isEnabled?: boolean
   webhookUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -611,6 +645,7 @@ export type WorkflowUpdateWithoutUserInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  isEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   webhookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -623,6 +658,7 @@ export type WorkflowUncheckedUpdateWithoutUserInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  isEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   webhookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -635,6 +671,7 @@ export type WorkflowUncheckedUpdateManyWithoutUserInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nodes?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   edges?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  isEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   webhookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -678,6 +715,7 @@ export type WorkflowSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   description?: boolean
   nodes?: boolean
   edges?: boolean
+  isEnabled?: boolean
   webhookUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -693,6 +731,7 @@ export type WorkflowSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   description?: boolean
   nodes?: boolean
   edges?: boolean
+  isEnabled?: boolean
   webhookUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -706,6 +745,7 @@ export type WorkflowSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   description?: boolean
   nodes?: boolean
   edges?: boolean
+  isEnabled?: boolean
   webhookUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -719,12 +759,13 @@ export type WorkflowSelectScalar = {
   description?: boolean
   nodes?: boolean
   edges?: boolean
+  isEnabled?: boolean
   webhookUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type WorkflowOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "name" | "description" | "nodes" | "edges" | "webhookUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["workflow"]>
+export type WorkflowOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "name" | "description" | "nodes" | "edges" | "isEnabled" | "webhookUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["workflow"]>
 export type WorkflowInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   executions?: boolean | Prisma.Workflow$executionsArgs<ExtArgs>
@@ -750,6 +791,7 @@ export type $WorkflowPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     description: string | null
     nodes: runtime.JsonValue
     edges: runtime.JsonValue
+    isEnabled: boolean
     webhookUrl: string | null
     createdAt: Date
     updatedAt: Date
@@ -1184,6 +1226,7 @@ export interface WorkflowFieldRefs {
   readonly description: Prisma.FieldRef<"Workflow", 'String'>
   readonly nodes: Prisma.FieldRef<"Workflow", 'Json'>
   readonly edges: Prisma.FieldRef<"Workflow", 'Json'>
+  readonly isEnabled: Prisma.FieldRef<"Workflow", 'Boolean'>
   readonly webhookUrl: Prisma.FieldRef<"Workflow", 'String'>
   readonly createdAt: Prisma.FieldRef<"Workflow", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Workflow", 'DateTime'>

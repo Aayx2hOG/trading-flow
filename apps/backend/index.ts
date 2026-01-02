@@ -18,9 +18,9 @@ const workflowExecutor = new WorkflowExecutor();
 const triggerService = new TriggerService();
 const credentialsService = new CredentialsService();
 
-triggerService.startAllTriggers().catch(err => {
-    console.error('Error starting triggers:', err);
-});
+// triggerService.startAllTriggers().catch(err => {
+//     console.error('Error starting triggers:', err);
+// });
 
 app.use(cors());
 app.use(passport.initialize());
@@ -241,8 +241,12 @@ app.post('/workflow/:workflowId/enable', authMiddleware, async (req: Request, re
         if (!worklow || worklow.userId !== req.userId) {
             return res.status(404).json({ error: 'Workflow not found' });
         }
+        const workflow = await prismaClient.workflow.update({
+            where: { id: workflowId },
+            data: { isEnabled: true }
+        });
         await triggerService.startWorkflowTrigger(workflowId!);
-        res.json({ status: 'Workflow enabled' });
+        res.json({ status: 'Workflow enabled', workflow });
     } catch (e) {
         res.status(500).json({ error: 'Enabling workflow failed' });
     }
@@ -257,8 +261,12 @@ app.post('/workflow/:workflowId/disable', authMiddleware, async (req: Request, r
         if (!workflow || workflow.userId !== req.userId) {
             return res.status(404).json({ error: 'Workflow not found' });
         }
+        const updatedWorkflow = await prismaClient.workflow.update({
+            where: { id: workflowId },
+            data: { isEnabled: false }
+        });
         triggerService.stopWorkflowTriggers(workflowId!);
-        res.json({ status: 'Workflow disabled' });
+        res.json({ status: 'Workflow disabled', workflow: updatedWorkflow });
     } catch (e) {
         res.status(500).json({ error: 'Disabling workflow failed' });
     }
@@ -412,6 +420,22 @@ app.all('/webhook/:webhookId', async (req: Request, res: Response) => {
         res.status(500).json({ error: 'Webhook execution failed' });
     }
 });
+
+app.put('/credentials/:id', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const {name, type, data} = req.body;
+        if (!name || !type || !data) {
+            return res.status(400).json({ error: 'Missing required fields' });
+        }
+        const updated = await credentialsService.update(req.userId!, req.params.id!, name, type, data);
+        if (!updated) {
+            return res.status(404).json({ error: 'Credentials not found' });
+        }
+        res.json({ credential: updated });
+    } catch (e) {
+        res.status(500).json({ error: 'Updating credentials failed' });
+    }  
+})
 
 app.get('/auth/google', passport.authenticate('google', {session: false}));
 app.get('/auth/google/callback', passport.authenticate('google', {session: false, failureRedirect: '/login'}), (req, res) => {

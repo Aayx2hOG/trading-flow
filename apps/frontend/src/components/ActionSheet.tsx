@@ -16,9 +16,11 @@ import {
     SheetHeader,
     SheetTitle,
 } from "@/components/ui/sheet"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
 import { SUPPORTED_ASSETS } from "./TriggerSheet";
+import { http } from "@/lib/http";
 
 const SUPPORTED_ACTIONS = [{
     id: 'hyperliquid',
@@ -36,6 +38,10 @@ const SUPPORTED_ACTIONS = [{
     id: 'condition',
     title: 'Condition',
     description: 'Add a logic gate to your workflow'
+}, {
+    id: 'email',
+    title: 'Email',
+    description: 'Send an email notification'
 }]
 
 export const ActionSheet = ({
@@ -51,6 +57,13 @@ export const ActionSheet = ({
 }) => {
     const [metaData, setMetaData] = useState<NodeMetaData | {}>(initialMetaData || {});
     const [selectedAction, setSelectedAction] = useState<NodeKind>(initialType || SUPPORTED_ACTIONS[0].id as NodeKind);
+    const [credentials, setCredentials] = useState<{id: string, name: string, type: string}[]>([]);
+
+    useEffect(() => {
+        http.get<{id: string, name: string, type: string}[]>('/credentials').then((creds) => {
+            setCredentials(creds.filter(c => c.type === 'email'));
+        });
+    }, []);
 
     return <Sheet open={true} onOpenChange={(open) => !open && onClose()}>
         <SheetContent className="sm:max-w-[500px]">
@@ -121,6 +134,47 @@ export const ActionSheet = ({
                         </div>
                     </div>
                 )}
+
+                    {selectedAction === 'email' && (
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-gray-700">Email Credentials</label>
+                                <Select
+                                    value={(metaData as any).credentialRefId || ''}
+                                    onValueChange={(val) => setMetaData({ ...metaData, credentialRefId: val })}
+                                >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select credentials" />
+                                    </SelectTrigger>
+                                    <SelectContent className="**:data-radix-select-viewport:pl-2">
+                                        <SelectGroup>
+                                            {credentials.map(c => (
+                                                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                            ))}
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                                {credentials.length === 0 && (
+                                    <p className="text-xs text-orange-500">No email credentials found. Add one in Credentials page first.</p>
+                                )}
+                            </div>
+                            <Input
+                                placeholder="Recipient email"
+                                value={(metaData as any).to || ''}
+                                onChange={(e) => setMetaData({ ...metaData, to: e.target.value })}
+                            />
+                            <Input
+                                placeholder="Subject: Price Alert for {{asset}}"
+                                value={(metaData as any).subject || ''}
+                                onChange={(e) => setMetaData({ ...metaData, subject: e.target.value })}
+                            />
+                            <Textarea
+                                placeholder="Body: {{asset}} is now at ${{currentPrice}}"
+                                value={(metaData as any).body || ''}
+                                onChange={(e) => setMetaData({ ...metaData, body: e.target.value })}
+                            />
+                        </div>
+                    )}
 
                 {(selectedAction === 'hyperliquid' || selectedAction === 'lighter' || selectedAction === 'backpack') &&
                     <div className="space-y-4">

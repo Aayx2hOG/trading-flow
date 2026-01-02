@@ -92,6 +92,7 @@ export const WorkflowScalarFieldEnum = {
   description: 'description',
   nodes: 'nodes',
   edges: 'edges',
+  isEnabled: 'isEnabled',
   webhookUrl: 'webhookUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

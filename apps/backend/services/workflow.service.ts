@@ -6,6 +6,7 @@ import { HyperliquidAction } from "./actions/hyperliquid.action";
 import { LighterAction } from "./actions/lighter.action";
 import { CredentialsService } from "./credentials.service";
 import { ConditionAction } from "./actions/condition.action";
+import { EmailAction } from "./actions/email.action";
 
 interface Node {
     id: string,
@@ -40,6 +41,7 @@ export class WorkflowExecutor {
         this.actions.set('lighter', new LighterAction());
         this.actions.set('backpack', new BackpackAction());
         this.actions.set('hyperliquid', new HyperliquidAction());
+        this.actions.set('email', new EmailAction());
     }
 
     async executeWorkflowById(workflowId: string, triggerData?: any): Promise<string> {
@@ -120,15 +122,18 @@ export class WorkflowExecutor {
             }
 
             const executionOrder = this.buildExecutionOrder(workflow.nodes, workflow.edges, triggerNode.id);
+            console.log('WorkflowExecutor: Execution order built:', executionOrder);
 
             for (const nodeId of executionOrder) {
                 const node = workflow.nodes.find(n => n.id === nodeId);
                 if (!node) continue;
 
                 if (node.data.kind === 'trigger') {
+                    console.log(`WorkflowExecutor: Processing trigger node ${node.id}`);
                     nodeResults.set(node.id, { triggered: true, data: node.data.metaData });
                     results.push({ nodeId: node.id, type: 'trigger', result: { triggered: true } });
                 } else {
+                    console.log(`WorkflowExecutor: Processing action node ${node.id} (${node.type})`);
                     const action = this.actions.get(node.type);
                     if (!action) {
                         results.push({ success: false, results, error: `Unknown node type: ${node.type}` });
@@ -142,15 +147,18 @@ export class WorkflowExecutor {
 
                     let creds = node.credentials || {};
                     if (creds && typeof creds === 'object' && 'refId' in creds) {
+                        console.log(`WorkflowExecutor: Resolving credentials for node ${node.id}`);
                         const resolved = await this.credentials.getDecrypted(workflow.userId!, creds.refId as string);
                         if (resolved?.data) creds = resolved.data;
                     }
-
+                    
+                    console.log(`WorkflowExecutor: Executing action for node ${node.id}`);
                     const result = await action!.execute(
                         creds,
                         node.data.metaData || {},
                         inputData
                     );
+                    console.log(`WorkflowExecutor: Node ${node.id} execution result:`, result);
 
                     nodeResults.set(node.id, result);
                     results.push({ nodeId: node.id, type: node.type, result });

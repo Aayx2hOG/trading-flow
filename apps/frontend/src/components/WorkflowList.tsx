@@ -16,6 +16,7 @@ import {
     GitBranch,
     Workflow as WorkflowIcon,
     Network,
+    Shield,
 } from 'lucide-react';
 
 export function WorkflowList() {
@@ -102,14 +103,25 @@ export function WorkflowList() {
                             Manage your automated trading workflows and monitoring tasks.
                         </p>
                     </div>
-                    <Button
-                        onClick={() => navigate('/workflow/new')}
-                        size="lg"
-                        className="h-12 px-6 gap-2 bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_0_20px_-5px_rgba(59,130,246,0.5)] hover:shadow-[0_0_25px_-3px_rgba(59,130,246,0.6)] transition-all duration-300 rounded-xl font-bold"
-                    >
-                        <Plus className="w-5 h-5" />
-                        New Automation
-                    </Button>
+                    <div className="flex items-center gap-3">
+                        <Button
+                            onClick={() => navigate('/credentials')}
+                            variant="outline"
+                            size="lg"
+                            className="h-12 px-6 gap-2 border-border/50 hover:bg-white/5 rounded-xl font-bold"
+                        >
+                            <Shield className="w-5 h-5" />
+                            Credentials
+                        </Button>
+                        <Button
+                            onClick={() => navigate('/workflow/new')}
+                            size="lg"
+                            className="h-12 px-6 gap-2 bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_0_20px_-5px_rgba(59,130,246,0.5)] hover:shadow-[0_0_25px_-3px_rgba(59,130,246,0.6)] transition-all duration-300 rounded-xl font-bold"
+                        >
+                            <Plus className="w-5 h-5" />
+                            New Automation
+                        </Button>
+                    </div>
                 </div>
 
                 {}

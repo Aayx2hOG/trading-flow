@@ -13,7 +13,14 @@ import {
   DialogDescription,
   DialogFooter
 } from '@/components/ui/dialog';
-import { Plus, Trash2, Key, Loader2, Shield, Calendar, Fingerprint, ArrowLeft } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Plus, Trash2, Key, Loader2, Shield, Calendar, Fingerprint, ArrowLeft, Pencil } from 'lucide-react';
 import { http } from '@/lib/http';
 
 interface Credential {
@@ -21,6 +28,8 @@ interface Credential {
   name: string;
   type: string;
   createdAt: string;
+  apiKey: string;
+  fromEmail: string;
 }
 
 export default function Credentials() {
@@ -28,7 +37,17 @@ export default function Credentials() {
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [newCred, setNewCred] = useState({ name: '', type: '', data: {} });
+
+  const CREDENTIAL_TYPES = [
+    { value: 'email', label: 'Email (Resend)', fields: ['apiKey', 'fromEmail'] },
+    { value: 'hyperliquid', label: 'Hyperliquid', fields: ['apiKey', 'apiSecret'] },
+    { value: 'backpack', label: 'Backpack', fields: ['apiKey', 'apiSecret'] },
+    { value: 'lighter', label: 'Lighter', fields: ['privateKey'] },
+  ];
+
+  const [newCred, setNewCred] = useState({ name: '', type: '', data: {apiKey: '', fromEmail: ''} });
+  const [editId, setEditId] = useState<string | null>(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,19 +66,58 @@ export default function Credentials() {
     }
   };
 
-  const handleCreate = async () => {
+  const startEdit = async (id: string) => {
+      try {
+          const cred = await http.get<any>(`/credentials/${id}`);
+          setNewCred({
+              name: cred.name,
+              type: cred.type,
+              data: cred.data 
+          });
+          setEditId(id);
+          setIsDialogOpen(true);
+      } catch (e) {
+          console.error("Failed to fetch credential details", e);
+      }
+  };
+
+  const cleanData = (data: any) => {
+        const cleaned = { ...data };
+        // Remove empty fields
+        Object.keys(cleaned).forEach(key => {
+            if (cleaned[key] === null || cleaned[key] === undefined || cleaned[key] === '') {
+                delete cleaned[key];
+            }
+        });
+        return cleaned;
+  }
+
+  const handleSave = async () => {
     if (!newCred.name || !newCred.type) return;
     setIsCreating(true);
     try {
-      await http.post('/credentials', newCred);
+      const payload = { ...newCred, data: cleanData(newCred.data) };
+      
+      if (editId) {
+          // Update existing
+          await http.put(`/credentials/${editId}`, payload);
+      } else {
+          // Create new
+          await http.post('/credentials', payload);
+      }
       setIsDialogOpen(false);
-      setNewCred({ name: '', type: '', data: {} });
+      resetForm();
       fetchCredentials();
     } catch (error) {
-      console.error('Failed to create credential:', error);
+      console.error('Failed to save credential:', error);
     } finally {
       setIsCreating(false);
     }
+  };
+
+  const resetForm = () => {
+      setNewCred({ name: '', type: '', data: {apiKey: '', fromEmail: ''} });
+      setEditId(null);
   };
 
   const handleDelete = async (id: string) => {
@@ -112,7 +170,10 @@ export default function Credentials() {
             </p>
           </div>
 
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <Dialog open={isDialogOpen} onOpenChange={(open) => {
+              setIsDialogOpen(open);
+              if (!open) resetForm();
+          }}>
             <DialogTrigger asChild>
               <Button size="lg" className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-2xl shadow-[0_0_25px_-5px_rgba(59,130,246,0.5)] transition-all h-12">
                 <Plus className="w-5 h-5" />
@@ -121,7 +182,7 @@ export default function Credentials() {
             </DialogTrigger>
             <DialogContent className="glass border-white/10 bg-card/60 text-foreground rounded-3xl overflow-hidden max-w-md">
               <DialogHeader className="pt-4">
-                <DialogTitle className="text-2xl font-bold">New Credential</DialogTitle>
+                <DialogTitle className="text-2xl font-bold">{editId ? 'Edit Credential' : 'New Credential'}</DialogTitle>
                 <DialogDescription className="text-muted-foreground">Add a new secret to use in your trading nodes.</DialogDescription>
               </DialogHeader>
               <div className="space-y-6 py-4">
@@ -136,21 +197,49 @@ export default function Credentials() {
                 </div>
                 <div className="space-y-2">
                   <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground/70">Provider Type</Label>
-                  <Input
-                    placeholder="e.g., hyperliquid, binance, lighter"
-                    value={newCred.type}
-                    onChange={(e) => setNewCred({ ...newCred, type: e.target.value })}
-                    className="h-12 bg-white/5 border-white/10 rounded-xl focus:ring-primary focus:ring-offset-0"
-                  />
+                  <Select value={newCred.type} onValueChange={(val) => setNewCred({ ...newCred, type: val })}>
+                    <SelectTrigger className="h-12 bg-white/5 border-white/10 rounded-xl">
+                      <SelectValue placeholder="Select provider" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CREDENTIAL_TYPES.map(t => (
+                        <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
+
+                {newCred.type === 'email' && (
+                  <>
+                    <div className="space-y-2">
+                      <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground/70">Resend API Key</Label>
+                      <Input
+                        type="password"
+                        placeholder="re_xxxx..."
+                        value={newCred.data.apiKey}
+                        onChange={(e) => setNewCred({ ...newCred, data: { ...newCred.data, apiKey: e.target.value } })}
+                        className="h-12 bg-white/5 border-white/10 rounded-xl"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground/70">From Email</Label>
+                      <Input
+                        placeholder="notifications@yourdomain.com"
+                        value={newCred.data.fromEmail}
+                        onChange={(e) => setNewCred({ ...newCred, data: { ...newCred.data, fromEmail: e.target.value } })}
+                        className="h-12 bg-white/5 border-white/10 rounded-xl"
+                      />
+                    </div>
+                  </>
+                )}
               </div>
               <DialogFooter className="pb-4">
                 <Button 
-                    onClick={handleCreate} 
+                    onClick={handleSave} 
                     className="w-full h-12 bg-primary font-bold rounded-xl"
                     disabled={isCreating}
                 >
-                  {isCreating ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Securely Save'}
+                  {isCreating ? <Loader2 className="w-5 h-5 animate-spin" /> : (editId ? 'Update Secret' : 'Securely Save')}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -173,7 +262,15 @@ export default function Credentials() {
             {credentials.map((cred) => (
                 <Card key={cred.id} className="glass group border-white/5 hover:border-primary/30 bg-card/40 transition-all duration-500 rounded-3xl overflow-hidden animate-in fade-in slide-in-from-bottom-2">
                 <CardHeader className="pb-4 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full"
+                            onClick={() => startEdit(cred.id)}
+                        >
+                            <Pencil className="w-4 h-4" />
+                        </Button>
                          <Button
                             variant="ghost"
                             size="icon"

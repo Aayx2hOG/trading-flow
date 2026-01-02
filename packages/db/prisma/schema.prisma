@@ -26,6 +26,7 @@ model Workflow {
   description String?
   nodes       Json        @default("[]")
   edges       Json        @default("[]")
+  isEnabled   Boolean     @default(false)
   executions  Execution[]
   webhookUrl  String?     @unique
   createdAt   DateTime    @default(now())

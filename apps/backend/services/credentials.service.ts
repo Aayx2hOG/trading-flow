@@ -41,6 +41,27 @@ export class CredentialsService {
         return { id: row.id, name: row.name, type: row.type, data };
     }
 
+    async update(userId: string, id: string, name: string, type: string, data: Record<string, any>){
+        const row = await prismaClient.credential.findUnique({
+            where: {id}
+        });
+        if (!row || row.userId !== userId){
+            throw new Error('Credential not found');
+        }
+        const enc = encryptObject(data, VAULT_SECRET!);
+        await prismaClient.credential.update({
+            where: {id},
+            data: {
+                name,
+                type,
+                encryptedData: enc.encryptedData,
+                iv: enc.iv,
+                authTag: enc.authTag,
+            },
+        });
+        return { id, name, type, createdAt: row.createdAt };
+    }
+
     async remove(userId: string, id: string) {
         const row = await prismaClient.credential.findUnique({
             where: { id },

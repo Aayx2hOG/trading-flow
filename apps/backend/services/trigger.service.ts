@@ -33,6 +33,7 @@ export class TriggerService {
     }
 
     async startWorkflowTrigger(workflowId: string) {
+        console.log(`TriggerService: Starting triggers for workflow ${workflowId}`);
         const workflow = await prismaClient.workflow.findUnique({
             where: { id: workflowId },
         });
@@ -46,6 +47,7 @@ export class TriggerService {
             console.warn(`No trigger nodes found for workflow with id ${workflowId}`);
             return;
         }
+        console.log(`TriggerService: Found ${triggerNodes.length} trigger nodes for workflow ${workflowId}`);
         for (const trigger of triggerNodes) {
             if (trigger.type === "price-trigger") {
                 this.startPriceTrigger(workflowId, trigger.data.metaData);
@@ -109,6 +111,13 @@ export class TriggerService {
     private startTimerTrigger(workflowId: string, metaData: any) {
         const key = `${workflowId}-timer`;
         const intervalMs = typeof metaData.time === 'number' ? metaData.time * 1000 : this.parseScheduleToMs(metaData.schedule);
+        
+        if (this.intervals.has(key)) {
+            console.log(`TriggerService: Clearing existing timer for ${key}`);
+            clearInterval(this.intervals.get(key));
+        }
+
+        console.log(`TriggerService: Starting Timer trigger for ${workflowId} with interval ${intervalMs}ms (${metaData.schedule})`);
 
         const interval = setInterval(async () => {
             try {
@@ -127,13 +136,16 @@ export class TriggerService {
 
     stopWorkflowTriggers(workflowId: string) {
         let count = 0;
+        console.log(`Stopping triggers for workflow ${workflowId}`);
         for (const [key, interval] of this.intervals.entries()) {
             if (key.startsWith(workflowId)) {
+                console.log(`Clearing interval for key: ${key}`);
                 clearInterval(interval);
                 this.intervals.delete(key);
                 count++;
             }
         }
+        console.log(`Stopped ${count} triggers for workflow ${workflowId}`);
     }
 
     stopAllTriggers() {
