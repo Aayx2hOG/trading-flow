@@ -65,7 +65,7 @@ export const ActionSheet = ({
 
     useEffect(() => {
         http.get<{id: string, name: string, type: string}[]>('/credentials').then((creds) => {
-            setCredentials(creds.filter(c => c.type === 'email'));
+            setCredentials(creds); 
         });
     }, []);
 
@@ -222,6 +222,27 @@ export const ActionSheet = ({
 
                 {(selectedAction === 'hyperliquid' || selectedAction === 'lighter' || selectedAction === 'backpack') &&
                     <div className="space-y-4">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-700">Trading Credentials</label>
+                            <Select
+                                value={(metaData as any).credentialRefId || ''}
+                                onValueChange={(val) => setMetaData({ ...metaData, credentialRefId: val })}
+                            >
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select credentials" />
+                                </SelectTrigger>
+                                <SelectContent className="**:data-radix-select-viewport:pl-2">
+                                    <SelectGroup>
+                                        {credentials.filter(c => c.type === selectedAction).map(c => (
+                                            <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                        ))}
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                            {credentials.filter(c => c.type === selectedAction).length === 0 && (
+                                <p className="text-xs text-orange-500">No {selectedAction} credentials found. Add one in Credentials page first.</p>
+                            )}
+                        </div>
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-gray-700">Position Type</label>
                             <Select value={(metaData as any).type || ''} onValueChange={(value) => setMetaData(metaData => ({

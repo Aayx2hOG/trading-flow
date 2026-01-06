@@ -22,3 +22,10 @@ export type JupiterSwapMetaData = {
     amount: number;
     slippageBps: number;
 }
+
+export type LighterMetaData = {
+    type: 'LONG' | 'SHORT';
+    symbol: typeof SUPPORTED_ASSETS[number];
+    qty: number;
+    reduceOnly?: boolean;  
+}

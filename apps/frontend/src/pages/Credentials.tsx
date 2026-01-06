@@ -42,7 +42,7 @@ export default function Credentials() {
     { value: 'email', label: 'Email (Resend)', fields: ['apiKey', 'fromEmail'] },
     { value: 'hyperliquid', label: 'Hyperliquid', fields: ['apiKey', 'apiSecret'] },
     { value: 'backpack', label: 'Backpack', fields: ['apiKey', 'apiSecret'] },
-    { value: 'lighter', label: 'Lighter', fields: ['privateKey'] },
+    { value: 'lighter', label: 'Lighter', fields: ['privateKey', 'accountIndex', 'apiKeyIndex'] },
   ];
 
   const [newCred, setNewCred] = useState({ name: '', type: '', data: {apiKey: '', fromEmail: ''} });
@@ -229,6 +229,51 @@ export default function Credentials() {
                         onChange={(e) => setNewCred({ ...newCred, data: { ...newCred.data, fromEmail: e.target.value } })}
                         className="h-12 bg-white/5 border-white/10 rounded-xl"
                       />
+                    </div>
+                  </>
+                )}
+
+                {newCred.type === 'lighter' && (
+                  <>
+                    <div className="space-y-2">
+                      <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground/70">API Key Private Key</Label>
+                      <Input
+                        type="password"
+                        placeholder="0x..."
+                        value={(newCred.data as any).privateKey || ''}  
+                        onChange={(e) => setNewCred({ ...newCred, data: { ...newCred.data, privateKey: e.target.value } })}
+                        className="h-12 bg-white/5 border-white/10 rounded-xl"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground/70">Account Index</Label>
+                      <Input
+                        type="number"
+                        placeholder="0"
+                        value={(newCred.data as any).accountIndex || ''}
+                        onChange={(e) => setNewCred({ ...newCred, data: { ...newCred.data, accountIndex: e.target.value } })}
+                        className="h-12 bg-white/5 border-white/10 rounded-xl"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground/70">API Key Index</Label>
+                      <Input
+                        type="number"
+                        placeholder="0"
+                        value={(newCred.data as any).apiKeyIndex || ''}
+                        onChange={(e) => setNewCred({ ...newCred, data: { ...newCred.data, apiKeyIndex: e.target.value } })}
+                        className="h-12 bg-white/5 border-white/10 rounded-xl"
+                      />
+                    </div>
+                    <div className="flex items-center gap-3 p-3 bg-white/5 rounded-xl border border-white/10">
+                      <input
+                        type="checkbox"
+                        id="useTestnet"
+                        checked={(newCred.data as any).useTestnet === 'true'}
+                        onChange={(e) => setNewCred({ ...newCred, data: { ...newCred.data, useTestnet: e.target.checked ? 'true' : 'false' } })}
+                        className="w-5 h-5 rounded"
+                      />
+                      <Label htmlFor="useTestnet" className="text-sm font-medium cursor-pointer">Use Testnet</Label>
                     </div>
                   </>
                 )}
