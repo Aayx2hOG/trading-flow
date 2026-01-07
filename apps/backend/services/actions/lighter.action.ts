@@ -79,7 +79,6 @@ export class LighterAction implements IAction {
         }
 
         try {
-            // Fetch order books
             const orderBooksResponse = await this.fetchWithTimeout(
                 `${baseUrl}/api/v1/orderBooks`, 10000
             );
@@ -90,26 +89,21 @@ export class LighterAction implements IAction {
                 return { success: false, error: `Market ${symbol} not found on Lighter` };
             }
 
-            // Fetch market details
             const detailsResponse = await this.fetchWithTimeout(
                 `${baseUrl}/api/v1/orderBookDetails?market_id=${market.market_id}`, 10000
             );
             const marketDetails = await detailsResponse.json() as OrderBookDetailsResponse;
             const details = marketDetails.order_book_details[0];
 
-            // Get price (fallback to Binance for testnet)
             let currentPrice = details?.last_trade_price || details?.best_bid_price || details?.best_ask_price;
             if (!currentPrice || currentPrice === 0) {
                 currentPrice = await this.fetchLivePrice(symbol);
             }
 
-            // Fetch nonce
             const nonceResponse = await this.fetchWithTimeout(
                 `${baseUrl}/api/v1/nextNonce?account_index=${accountIdx}&api_key_index=${apiKeyIdx}`, 10000
             );
             const { nonce } = await nonceResponse.json() as NonceResponse;
-
-            // Prepare order params
             const isAsk = type === 'SHORT';
             const clientOrderIndex = Date.now() % 1000000;
             const sizeDecimals = details?.size_decimals || 5;
@@ -117,7 +111,6 @@ export class LighterAction implements IAction {
             const baseAmount = Math.floor(qty * Math.pow(10, sizeDecimals));
             const priceInUnits = Math.floor(currentPrice * Math.pow(10, priceDecimals));
 
-            // Sign order in subprocess to avoid FFI blocking
             const signerPayload = JSON.stringify({
                 baseUrl, privateKey, apiKeyIdx, accountIdx,
                 marketId: market.market_id, clientOrderIndex, baseAmount,
@@ -128,11 +121,16 @@ export class LighterAction implements IAction {
             const signerScript = new URL('./lighter-signer.ts', import.meta.url).pathname;
             const signResult = await this.runSignerSubprocess(signerScript, signerPayload);
 
-            if (!signResult.success || !signResult.txInfo) {
+            if (!signResult.success) {
+                if (signResult.error?.includes('timed out')) {
+                    return { success: true, data: { cancelled: true, reason: 'Workflow stopped' } };
+                }
                 return { success: false, error: `Signing failed: ${signResult.error}` };
             }
+            if (!signResult.txInfo) {
+                return { success: false, error: 'Signing failed: no transaction info returned' };
+            }
 
-            // Submit transaction via curl
             const submitResult = await this.submitTransaction(baseUrl, signResult.txType!, signResult.txInfo);
 
             if (!submitResult.success) {
@@ -173,6 +171,7 @@ export class LighterAction implements IAction {
     private async runSignerSubprocess(script: string, payload: string): Promise<{
         success: boolean; txType?: number; txInfo?: string; signature?: string; error?: string;
     }> {
+        console.log('Starting signer subprocess...');
         const proc = Bun.spawn(['bun', script, payload], {
             stdout: 'pipe',
             stderr: 'pipe',
@@ -184,13 +183,17 @@ export class LighterAction implements IAction {
         });
 
         try {
-            const output = await Promise.race([
-                new Response(proc.stdout).text(),
-                timeoutPromise
-            ]);
-            await proc.exited;
+            const outputPromise = (async () => {
+                const output = await new Response(proc.stdout).text();
+                console.log('Subprocess output received:', output.substring(0, 100));
+                return output;
+            })();
+
+            const output = await Promise.race([outputPromise, timeoutPromise]);
             return JSON.parse(output.trim());
         } catch (err: any) {
+            console.log('Subprocess error:', err.message);
+            try { proc.kill(); } catch {}
             return { success: false, error: err.message };
         }
     }
