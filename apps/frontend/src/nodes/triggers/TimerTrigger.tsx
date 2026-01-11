@@ -1,12 +1,14 @@
 import { Handle, Position } from "@xyflow/react";
 import type { TimerNodeMetaData } from "common/types";
+import { NodeWrapper } from "@/components/NodeWrapper";
 
-export function TimerTrigger({ data }: { data: { metaData: TimerNodeMetaData }}) {
+export function TimerTrigger({ id, data }: { id: string; data: { metaData: TimerNodeMetaData }}) {
     const minutes = Math.floor(data.metaData.time / 60);
     const seconds = data.metaData.time % 60;
     const timeDisplay = minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
 
     return (
+        <NodeWrapper nodeId={id}>
         <div className="glass bg-card/40 border-purple-500/20 rounded-2xl p-4 min-w-[200px] hover:border-purple-500/40 transition-all duration-300 shadow-xl shadow-purple-500/5">
             <div className="mb-3 pb-3 border-b border-white/5 flex items-center justify-between">
                 <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
@@ -29,5 +31,6 @@ export function TimerTrigger({ data }: { data: { metaData: TimerNodeMetaData }})
                 className="!bg-purple-500 !w-3.5 !h-3.5 !border-4 !border-background hover:!scale-125 transition-transform" 
             />
         </div>
+        </NodeWrapper>
     );
 }

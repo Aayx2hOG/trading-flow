@@ -1,7 +1,7 @@
-import { Handle, Position, type NodeProps } from '@xyflow/react';
+import { Handle, Position, useReactFlow, type NodeProps } from '@xyflow/react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Mail } from 'lucide-react';
+import { Mail, X } from 'lucide-react';
 import { memo } from 'react';
 
 export interface EmailMetaData {
@@ -11,11 +11,25 @@ export interface EmailMetaData {
     credentialRefId?: string;
 }
 
-export const Email = memo(({ data, selected }: NodeProps) => {
+export const Email = memo(({ id, data, selected }: NodeProps) => {
     const metaData = data.metaData as EmailMetaData;
+    const { setNodes, setEdges } = useReactFlow();
+
+    const handleDelete = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setNodes((nodes) => nodes.filter((node) => node.id !== id));
+        setEdges((edges) => edges.filter((edge) => edge.source !== id && edge.target !== id));
+    };
 
     return (
         <div className="relative group">
+            <button
+                onClick={handleDelete}
+                className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500/80 hover:bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 shadow-lg"
+                title="Delete node"
+            >
+                <X className="w-3 h-3" />
+            </button>
             <Handle
                 type="target"
                 position={Position.Left}

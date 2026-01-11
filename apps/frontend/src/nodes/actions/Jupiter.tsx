@@ -1,8 +1,10 @@
 import { Handle, Position } from "@xyflow/react";
 import type { JupiterSwapMetaData } from "common/types";
+import { NodeWrapper } from "@/components/NodeWrapper";
 
-export function Jupiter({ data }: { data: { metaData: JupiterSwapMetaData }}) {
+export function Jupiter({ id, data }: { id: string; data: { metaData: JupiterSwapMetaData }}) {
     return (
+        <NodeWrapper nodeId={id}>
         <div className="glass bg-card/40 border-white/5 rounded-2xl p-4 min-w-[200px] hover:border-primary/30 transition-all duration-300 shadow-xl shadow-black/20">
             <div className="mb-3 pb-3 border-b border-white/5 flex items-center justify-between">
                 <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
@@ -35,5 +37,6 @@ export function Jupiter({ data }: { data: { metaData: JupiterSwapMetaData }}) {
                 className="!bg-primary/80 !w-3.5 !h-3.5 !border-4 !border-background hover:!scale-125 transition-transform" 
             />
         </div>
+        </NodeWrapper>
     );
 }
